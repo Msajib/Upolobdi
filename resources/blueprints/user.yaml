@@ -1,0 +1,88 @@
+title: User
+fields:
+  -
+    handle: name
+    field:
+      type: text
+      display: 'Full Name (English)'
+      validate: required
+      width: 50
+  -
+    handle: bangla_name
+    field:
+      type: text
+      display: 'পূর্ণ নাম (বাংলা)'
+      width: 50
+  -
+    handle: email
+    field:
+      type: text
+      input: email
+      display: 'Email Address'
+      validate: 'required|email'
+      width: 50
+  -
+    handle: phone
+    field:
+      type: text
+      display: 'Phone Number (মোবাইল নম্বর)'
+      width: 50
+  -
+    handle: member_id
+    field:
+      type: text
+      display: 'Member ID (সদস্য নম্বর)'
+      width: 50
+  -
+    handle: designation
+    field:
+      type: text
+      display: 'Designation / পদবী'
+      width: 50
+  -
+    handle: joined_date
+    field:
+      type: date
+      display: 'Join Date (যোগদানের তারিখ)'
+      width: 50
+  -
+    handle: roles
+    field:
+      type: user_roles
+      display: 'Roles'
+      width: 50
+  -
+    handle: exemption_months
+    field:
+      type: integer
+      display: 'Due Exemption Months (মওকুফ/ছাড়কৃত মাস)'
+      instructions: 'ক্যাশিয়ার সর্বোচ্চ ৬ মাস, সুপার অ্যাডমিন সর্বোচ্চ ১২ মাস মওকুফ করতে পারেন'
+      default: 0
+      width: 50
+  -
+    handle: exemption_approved_by
+    field:
+      type: text
+      display: 'Exemption Approved By'
+      width: 50
+  -
+    handle: exemption_reason
+    field:
+      type: text
+      display: 'Exemption Reason (মওকুফের কারণ)'
+      width: 100
+  -
+    handle: avatar
+    field:
+      type: assets
+      max_files: 1
+      container: assets
+      display: 'Profile Photo'
+      width: 50
+  -
+    handle: is_active
+    field:
+      type: toggle
+      display: 'Active Member'
+      default: true
+      width: 50

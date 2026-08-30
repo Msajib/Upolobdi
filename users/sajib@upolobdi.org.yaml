@@ -1,0 +1,18 @@
+name: 'Sajib Mulla'
+bangla_name: 'সজিব মোল্লা'
+designation: 'সভাপতি (President)'
+member_id: USS-001
+phone: 01711-000001
+joined_date: '2020-01-01'
+avatar: /uploads/avatars/avatar_0295bdae-bf66-4f37-8eda-b5974b398737_1788035981.jpg
+exemption_months: 0
+is_active: true
+super: true
+roles:
+  - superadmin
+id: 0295bdae-bf66-4f37-8eda-b5974b398737
+password_hash: $2y$12$I6LXPdrb5QKCXxfqwtV5ZOcnny1inEHVyKTzcbm5zbWiz5XGVPkae
+preferences:
+  collections:
+    announcements:
+      view: list

@@ -1,0 +1,13 @@
+name: Kawser
+bangla_name: কাউসার
+designation: 'কার্যনির্বাহী সদস্য (Member)'
+member_id: USS-004
+phone: 01711-000004
+joined_date: '2020-01-01'
+avatar: /assets/images/avatars/kawser.jpg
+exemption_months: 0
+is_active: true
+roles:
+  - member
+id: c08b98b9-e16a-4ee1-b0db-c2901a8ba535
+password_hash: $2y$10$FPVF0jfMN55gR9.vWAwF1uFTl/kWI6DtJrOJpMrjGvF2ZVjb6uS1y

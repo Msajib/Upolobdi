@@ -1,0 +1,9 @@
+title: 'Payments (কিস্তি ও জমার হিসাব)'
+template: default
+layout: layout
+revisions: false
+route: '/payments/{slug}'
+sort_dir: desc
+sort_by: date
+sites:
+  - default

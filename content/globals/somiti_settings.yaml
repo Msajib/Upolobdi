@@ -1,0 +1,17 @@
+title: 'Somiti Global Settings'
+data:
+  monthly_installment: 1000
+  due_warning_modal_enabled: true
+  somiti_name_en: 'Upolobdi Somobay Somiti (USS)'
+  somiti_name_bn: 'উপলব্ধি সমবায় সমিতি'
+  motto_bn: 'সত্যের পথে স্বপ্নের অভিযান'
+  motto_en: 'Journey of Dreams on the Path of Truth'
+  est_year: '2020'
+  bkash_number: '01712-345678 (Personal / Send Money)'
+  nagad_number: '01812-345678 (Personal)'
+  rocket_number: '01912-345678-9'
+  bank_details: 'Islami Bank Bangladesh Ltd, A/C: 20501234567890, Branch: Dhanmondi'
+  contact_phone: '+880 1712-345678'
+  contact_email: 'info@upolobdi-somiti.org'
+  address_bn: 'ঢাকা, বাংলাদেশ'
+  address_en: 'Dhaka, Bangladesh'

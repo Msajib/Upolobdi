@@ -1,0 +1,41 @@
+title: 'Somiti Settings'
+fields:
+  -
+    handle: monthly_installment
+    field:
+      type: integer
+      display: 'Monthly Installment (মাসিক কিস্তি - টাকা)'
+      default: 1000
+      width: 50
+  -
+    handle: due_warning_modal_enabled
+    field:
+      type: toggle
+      display: 'Public 2+ Months Due Warning Modal (ওয়েবসাইটে বকেয়া সতর্কতা বোর্ড)'
+      instructions: 'ক্যাশিয়ার ও সুপার অ্যাডমিন এই সতর্কতা চালু/বন্ধ করতে পারবেন'
+      default: true
+      width: 50
+  -
+    handle: bkash_number
+    field:
+      type: text
+      display: 'bKash Number'
+      width: 50
+  -
+    handle: nagad_number
+    field:
+      type: text
+      display: 'Nagad Number'
+      width: 50
+  -
+    handle: rocket_number
+    field:
+      type: text
+      display: 'Rocket Number'
+      width: 50
+  -
+    handle: bank_details
+    field:
+      type: text
+      display: 'Bank Account Details'
+      width: 50

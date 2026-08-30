@@ -1,0 +1,116 @@
+title: Payment
+fields:
+  -
+    handle: title
+    field:
+      type: text
+      display: 'Payment Title / ID'
+      required: true
+  -
+    handle: user_id
+    field:
+      type: users
+      max_items: 1
+      display: 'Member / সদস্য'
+      width: 50
+  -
+    handle: member_email
+    field:
+      type: text
+      display: 'Member Email'
+      width: 50
+  -
+    handle: amount
+    field:
+      type: integer
+      display: 'Amount Paid (টাকার পরিমাণ)'
+      width: 50
+  -
+    handle: months_count
+    field:
+      type: integer
+      display: 'Months Count (কত মাসের কিস্তি)'
+      default: 1
+      width: 50
+  -
+    handle: payment_months
+    field:
+      type: text
+      display: 'Payment Months Range (কোন মাসের কিস্তি, যেমন Jan 2025 - Mar 2025)'
+      width: 100
+  -
+    handle: payment_method
+    field:
+      type: select
+      options:
+        bkash: 'bKash (বিকাশ)'
+        nagad: 'Nagad (নগদ)'
+        rocket: 'Rocket (রকেট)'
+        bank: 'Bank Transfer (ব্যাংক)'
+        cash: 'Direct Cash (নগদ গ্রহণ)'
+      display: 'Payment Method'
+      width: 50
+  -
+    handle: reference_number
+    field:
+      type: text
+      display: 'TrxID / Reference Number (লেনদেন নম্বর)'
+      width: 50
+  -
+    handle: payment_date
+    field:
+      type: date
+      display: 'Payment Date (পরিশোধের তারিখ)'
+      width: 50
+  -
+    handle: payment_status
+    field:
+      type: select
+      options:
+        pending: 'Pending Approval (অনুমোদনের অপেক্ষায়)'
+        approved: 'Approved (অনুমোদিত)'
+        rejected: 'Rejected (প্রত্যাখ্যাত)'
+      default: pending
+      display: 'Payment Status'
+      width: 50
+  -
+    handle: proof_image
+    field:
+      type: text
+      display: 'Proof Image Path / Screenshot'
+      width: 100
+  -
+    handle: rejection_reason
+    field:
+      type: textarea
+      display: 'Rejection Reason (বাতিলের কারণ)'
+      width: 100
+  -
+    handle: entry_type
+    field:
+      type: select
+      options:
+        own: 'Self (সদস্য নিজে)'
+        cashier: 'Cashier (ক্যাশিয়ার কর্তৃক এন্ট্রি)'
+        superadmin: 'President (সভাপতি কর্তৃক এন্ট্রি)'
+      default: own
+      display: 'Entry Type'
+      width: 50
+  -
+    handle: entry_created_by
+    field:
+      type: text
+      display: 'Entry Recorded By'
+      width: 50
+  -
+    handle: reviewed_by
+    field:
+      type: text
+      display: 'Reviewed By (অনুমোদনকারী)'
+      width: 50
+  -
+    handle: reviewed_at
+    field:
+      type: date
+      display: 'Reviewed Date'
+      width: 50

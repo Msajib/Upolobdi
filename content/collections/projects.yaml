@@ -1,0 +1,9 @@
+title: Projects
+template: default
+layout: layout
+revisions: false
+route: '/projects/{slug}'
+sort_dir: asc
+date: false
+title_formats:
+  - '{title}'

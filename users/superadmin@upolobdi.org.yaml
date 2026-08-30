@@ -1,0 +1,10 @@
+name: 'Control Panel Superadmin'
+bangla_name: 'সুপার অ্যাডমিন'
+designation: 'সিস্টেম অ্যাডমিনিস্ট্রেটর'
+is_active: true
+is_system_admin: true
+super: true
+roles:
+  - superadmin
+id: a01b98c9-e16a-4ee1-b0db-c2901a8ba999
+password_hash: $2y$10$eRFmrjDuHHJtk1Q.cUsqquPiguNdtH/WqDBvEYIAlUzVmi60pZZb2

@@ -1,0 +1,9 @@
+title: 'Announcements (ঘোষণাপত্র)'
+template: default
+layout: layout
+revisions: false
+route: '/announcements/{slug}'
+sort_dir: desc
+sort_by: date
+sites:
+  - default

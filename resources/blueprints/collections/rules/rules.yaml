@@ -1,0 +1,50 @@
+title: Rule
+fields:
+  -
+    handle: title_bn
+    field:
+      type: text
+      display: 'ধারার শিরোনাম (বাংলা)'
+      required: true
+      width: 50
+  -
+    handle: title_en
+    field:
+      type: text
+      display: 'Rule Title (English)'
+      required: true
+      width: 50
+  -
+    handle: rule_number
+    field:
+      type: text
+      display: 'ধারা নম্বর (যেমন: ধারা ১)'
+      width: 25
+  -
+    handle: order
+    field:
+      type: integer
+      display: 'Order (ক্রম)'
+      default: 1
+      width: 25
+  -
+    handle: icon
+    field:
+      type: text
+      display: 'FontAwesome Icon (e.g. fa-money-bill-transfer)'
+      default: 'fa-shield-halved'
+      width: 50
+  -
+    handle: description_bn
+    field:
+      type: textarea
+      display: 'ধারার বিস্তারিত নিয়ম (বাংলা)'
+      required: true
+      width: 100
+  -
+    handle: description_en
+    field:
+      type: textarea
+      display: 'Rule Detailed Description (English)'
+      required: true
+      width: 100

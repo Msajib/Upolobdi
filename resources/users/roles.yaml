@@ -1,0 +1,21 @@
+superadmin:
+  title: 'সভাপতি (Super Admin)'
+  permissions:
+    - super
+admin:
+  title: 'সহ-সভাপতি (Admin)'
+  permissions:
+    - 'access cp'
+    - 'view events entries'
+    - 'create events entries'
+    - 'edit events entries'
+    - 'view payments entries'
+cashier:
+  title: 'ক্যাশিয়ার (Cashier)'
+  permissions:
+    - 'access cp'
+    - 'view payments entries'
+    - 'edit payments entries'
+member:
+  title: 'সদস্য (Member)'
+  permissions: []

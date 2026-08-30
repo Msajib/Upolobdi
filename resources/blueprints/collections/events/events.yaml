@@ -1,0 +1,59 @@
+title: Event
+fields:
+  -
+    handle: title
+    field:
+      type: text
+      display: 'Event Title (English)'
+      required: true
+      width: 50
+  -
+    handle: title_bn
+    field:
+      type: text
+      display: 'ইভেন্টের নাম (বাংলা)'
+      required: true
+      width: 50
+  -
+    handle: event_date
+    field:
+      type: date
+      display: 'Event Date (তারিখ)'
+      width: 50
+  -
+    handle: location
+    field:
+      type: text
+      display: 'Location / স্থান'
+      width: 50
+  -
+    handle: image
+    field:
+      type: text
+      display: 'Cover Image URL'
+      width: 50
+  -
+    handle: is_highlighted
+    field:
+      type: toggle
+      display: 'Highlight on Website / হাইলাইট সেকশনে দেখান'
+      default: false
+      width: 50
+  -
+    handle: gallery_images
+    field:
+      type: list
+      display: 'Multiple Gallery Photos (URLs/Paths)'
+      width: 100
+  -
+    handle: description
+    field:
+      type: textarea
+      display: 'Description (English)'
+      width: 100
+  -
+    handle: description_bn
+    field:
+      type: textarea
+      display: 'বিবরণ (বাংলা)'
+      width: 100

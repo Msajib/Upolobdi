@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="60" fill="#0F2850" stroke="url(#favGold)" stroke-width="4"/>
+  <circle cx="64" cy="64" r="50" fill="#FFFFFF"/>
+  <circle cx="64" cy="36" r="6" fill="#047857"/>
+  <circle cx="48" cy="40" r="5" fill="#0F2850"/>
+  <circle cx="80" cy="40" r="5" fill="#0F2850"/>
+  <text x="36" y="74" font-family="Arial Black, Montserrat, sans-serif" font-weight="900" font-size="28" fill="#0F2850">U</text>
+  <text x="56" y="74" font-family="Arial Black, Montserrat, sans-serif" font-weight="900" font-size="28" fill="#059669">S</text>
+  <text x="76" y="74" font-family="Arial Black, Montserrat, sans-serif" font-weight="900" font-size="28" fill="#0F2850">S</text>
+  <path d="M 40 86 Q 64 80 88 86 L 82 96 Q 64 92 46 96 Z" fill="#047857" stroke="url(#favGold)" stroke-width="1.5"/>
+</svg>

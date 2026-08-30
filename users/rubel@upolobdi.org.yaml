@@ -1,0 +1,13 @@
+name: 'Rubel Mulla'
+bangla_name: 'রুবেল মোল্লা'
+designation: 'সহ-সভাপতি (Vice President)'
+member_id: USS-002
+phone: 01711-000002
+joined_date: '2020-01-01'
+avatar: /assets/images/avatars/rubel.jpg
+exemption_months: 0
+is_active: true
+roles:
+  - admin
+id: 1229aaed-d949-41e6-bc0c-62a5657f9e7c
+password_hash: $2y$10$FPVF0jfMN55gR9.vWAwF1uFTl/kWI6DtJrOJpMrjGvF2ZVjb6uS1y

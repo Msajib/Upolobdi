@@ -1,0 +1,72 @@
+[
+    {
+        "Component": "SomitiService::getSettings()",
+        "Min (ms)": 0,
+        "Avg (ms)": 0,
+        "Max (ms)": 0.004,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "SomitiService::getAllMembers()",
+        "Min (ms)": 0,
+        "Avg (ms)": 0,
+        "Max (ms)": 0.002,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "SomitiService::calculateDue (All 6 Members)",
+        "Min (ms)": 0.003,
+        "Avg (ms)": 0.068,
+        "Max (ms)": 3.185,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "SomitiService::getPayments()",
+        "Min (ms)": 0,
+        "Avg (ms)": 0,
+        "Max (ms)": 0.002,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "SomitiService::getFinancialOverview()",
+        "Min (ms)": 0,
+        "Avg (ms)": 0.001,
+        "Max (ms)": 0.016,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "HomeController@index (Landing Page)",
+        "Min (ms)": 0.062,
+        "Avg (ms)": 0.084,
+        "Max (ms)": 0.26,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "DashboardController@index (President: Sajib)",
+        "Min (ms)": 2.323,
+        "Avg (ms)": 3.405,
+        "Max (ms)": 5.431,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "DashboardController@index (Member: Kawser)",
+        "Min (ms)": 1.857,
+        "Avg (ms)": 3.238,
+        "Max (ms)": 4.822,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "DashboardController@viewReceipt (Money Receipt)",
+        "Min (ms)": 0.08,
+        "Avg (ms)": 0.099,
+        "Max (ms)": 0.223,
+        "Status": "✅ PASS (<10ms)"
+    },
+    {
+        "Component": "DashboardController@exportLedger (Print\/PDF Ledger)",
+        "Min (ms)": 0.086,
+        "Avg (ms)": 0.098,
+        "Max (ms)": 0.189,
+        "Status": "✅ PASS (<10ms)"
+    }
+]

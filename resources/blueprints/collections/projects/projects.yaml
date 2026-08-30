@@ -1,0 +1,63 @@
+title: Project
+fields:
+  -
+    handle: title
+    field:
+      type: text
+      display: 'Project Title (English)'
+      required: true
+      width: 50
+  -
+    handle: title_bn
+    field:
+      type: text
+      display: 'প্রকল্পের শিরোনাম (বাংলা)'
+      required: true
+      width: 50
+  -
+    handle: status
+    field:
+      type: select
+      options:
+        ongoing: 'চলমান (Ongoing)'
+        planned: 'পরিকল্পনাধীন (Planned)'
+        completed: 'সম্পন্ন (Completed)'
+      default: planned
+      display: 'Project Status'
+      width: 50
+  -
+    handle: target_amount
+    field:
+      type: text
+      display: 'Investment Capital / বাজেট'
+      width: 50
+  -
+    handle: timeline
+    field:
+      type: text
+      display: 'Timeline / মেয়াদকাল'
+      width: 50
+  -
+    handle: location
+    field:
+      type: text
+      display: 'Project Location / প্রকল্প এলাকা'
+      width: 50
+  -
+    handle: image
+    field:
+      type: text
+      display: 'Project Image URL'
+      width: 100
+  -
+    handle: description
+    field:
+      type: textarea
+      display: 'Project Description (English)'
+      width: 100
+  -
+    handle: description_bn
+    field:
+      type: textarea
+      display: 'প্রকল্পের বিস্তারিত বিবরণ (বাংলা)'
+      width: 100

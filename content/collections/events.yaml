@@ -1,0 +1,9 @@
+title: 'Events & Activities (কার্যক্রম ও ইভেন্ট)'
+template: default
+layout: layout
+revisions: false
+route: '/events/{slug}'
+sort_dir: desc
+sort_by: date
+sites:
+  - default

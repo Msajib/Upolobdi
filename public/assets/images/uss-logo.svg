@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="50%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="50%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="50%" stop-color="#064E3B"/>
+      <stop offset="100%" stop-color="#022C22"/>
+    </linearGradient>
+
+    <!-- Filters for Glow & 3D Shadow -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.35"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Text Paths -->
+    <!-- Top Arc Path -->
+    <path id="topTextArc" d="M 90 280 A 210 210 0 1 1 510 280" fill="none"/>
+    <!-- Bottom Ribbon Arc Path -->
+    <path id="bottomRibbonArc" d="M 120 528 Q 300 575 480 528" fill="none"/>
+  </defs>
+
+  <!-- Background outer badge -->
+  <g filter="url(#dropShadow)">
+    <!-- Outer Navy Ring -->
+    <circle cx="300" cy="275" r="245" fill="#FFFFFF" stroke="#0F2850" stroke-width="12"/>
+    <!-- Inner Gold Ring -->
+    <circle cx="300" cy="275" r="236" fill="none" stroke="url(#goldGrad)" stroke-width="4"/>
+    <!-- Inner Fine Navy Border -->
+    <circle cx="300" cy="275" r="188" fill="#FFFFFF" stroke="#0F2850" stroke-width="3.5"/>
+  </g>
+
+  <!-- Top Curved Bangla Title -->
+  <text fill="#0F2850" font-family="'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif" font-size="34" font-weight="900" letter-spacing="1.5">
+    <textPath href="#topTextArc" startOffset="50%" text-anchor="middle">
+      উপলব্ধি সমবায় সমিতি
+    </textPath>
+  </text>
+
+  <!-- Left Laurel Leaves -->
+  <g fill="#059669">
+    <path d="M 72 265 C 65 245 78 225 85 220 C 87 235 85 255 72 265 Z"/>
+    <path d="M 62 305 C 55 285 68 265 77 260 C 78 275 75 295 62 305 Z"/>
+    <path d="M 60 350 C 52 330 65 310 74 305 C 75 320 72 340 60 350 Z"/>
+    <path d="M 68 395 C 60 375 74 355 83 350 C 84 365 80 385 68 395 Z"/>
+    <path d="M 85 435 C 78 415 95 395 105 392 C 104 408 98 426 85 435 Z"/>
+    <path d="M 115 470 C 105 450 122 435 132 432 C 130 448 124 464 115 470 Z"/>
+    <path d="M 78 215 C 88 230 84 250 82 258 C 76 250 72 230 78 215 Z"/>
+    <path d="M 68 255 C 78 270 74 290 72 298 C 66 290 62 270 68 255 Z"/>
+  </g>
+
+  <!-- Right Laurel Leaves -->
+  <g fill="#059669">
+    <path d="M 528 265 C 535 245 522 225 515 220 C 513 235 515 255 528 265 Z"/>
+    <path d="M 538 305 C 545 285 532 265 523 260 C 522 275 525 295 538 305 Z"/>
+    <path d="M 540 350 C 548 330 535 310 526 305 C 525 320 528 340 540 350 Z"/>
+    <path d="M 532 395 C 540 375 526 355 517 350 C 516 365 520 385 532 395 Z"/>
+    <path d="M 515 435 C 522 415 505 395 495 392 C 496 408 502 426 515 435 Z"/>
+    <path d="M 485 470 C 495 450 478 435 468 432 C 470 448 476 464 485 470 Z"/>
+    <path d="M 522 215 C 512 230 516 250 518 258 C 524 250 528 230 522 215 Z"/>
+    <path d="M 532 255 C 522 270 526 290 528 298 C 534 290 538 270 532 255 Z"/>
+  </g>
+
+  <!-- Golden Sun Rays in Top Inner Arch -->
+  <g transform="translate(300, 195)">
+    <!-- Sun disk -->
+    <path d="M -75 0 A 75 75 0 0 1 75 0 Z" fill="url(#goldLight)"/>
+    <!-- Sun Rays radiating outward -->
+    <path d="M 0 -75 L 0 -105 M -28 -68 L -45 -95 M 28 -68 L 45 -95 M -55 -48 L -82 -68 M 55 -48 L 82 -68 M -70 -20 L -100 -28 M 70 -20 L 100 -28" 
+          stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Three Cheerful Figures (Friends) -->
+  <g id="three-figures">
+    <!-- Center Green Figure -->
+    <circle cx="300" cy="155" r="14" fill="#047857"/>
+    <path d="M 300 174 C 286 174 274 186 270 200 L 255 168 C 253 164 246 168 250 175 L 272 215 L 285 248 L 315 248 L 328 215 L 350 175 C 354 168 347 164 345 168 L 330 200 C 326 186 314 174 300 174 Z" fill="#059669"/>
+    
+    <!-- Left Blue Figure -->
+    <circle cx="236" cy="168" r="11" fill="#0F2850"/>
+    <path d="M 236 182 C 224 182 214 192 210 203 L 198 178 C 195 174 190 177 193 182 L 210 216 L 222 245 L 244 245 L 246 215 L 260 190 C 255 195 245 182 236 182 Z" fill="#0F2850"/>
+
+    <!-- Right Blue Figure -->
+    <circle cx="364" cy="168" r="11" fill="#0F2850"/>
+    <path d="M 364 182 C 376 182 386 192 390 203 L 402 178 C 405 174 410 177 407 182 L 390 216 L 378 245 L 356 245 L 354 215 L 340 190 C 345 195 355 182 364 182 Z" fill="#0F2850"/>
+  </g>
+
+  <!-- USS Bold Modern Geometric Center Typography -->
+  <g font-family="'Arial Black', 'Montserrat', 'Impact', sans-serif" font-size="112" font-weight="900" text-anchor="middle" letter-spacing="-3">
+    <!-- Letter U (Deep Navy) -->
+    <text x="210" y="325" fill="#0F2850">U</text>
+    <!-- Letter S (Emerald Green) -->
+    <text x="300" y="325" fill="#059669">S</text>
+    <!-- Letter S (Deep Navy) -->
+    <text x="390" y="325" fill="#0F2850">S</text>
+  </g>
+
+  <!-- Open Book, Shaking Hands, Sprout of Growth -->
+  <g id="book-hands-sprout">
+    <!-- Open Book Pages (Navy & White layers) -->
+    <!-- Spine and Base -->
+    <path d="M 300 452 L 135 435 C 130 434 125 430 130 422 L 175 355 C 235 375 280 395 300 405 C 320 395 365 375 425 355 L 470 422 C 475 430 470 434 465 435 Z" fill="#0F2850"/>
+    
+    <!-- White Pages Inner Lines -->
+    <path d="M 300 442 L 145 428 L 182 365 C 238 382 278 400 300 408 C 322 400 362 382 418 365 L 455 428 Z" fill="#FFFFFF"/>
+    
+    <!-- Page Spine details -->
+    <path d="M 160 415 L 295 432 M 170 400 L 290 418 M 180 385 L 285 405" stroke="#0F2850" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 440 415 L 305 432 M 430 400 L 310 418 M 420 385 L 315 405" stroke="#0F2850" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Shaking Hands (Cooperation & Unity) -->
+    <!-- Left Hand / Cuff (Green) -->
+    <path d="M 230 402 L 265 410 L 275 432 L 240 438 L 225 415 Z" fill="#047857"/>
+    <rect x="222" y="405" width="12" height="30" rx="3" fill="#064E3B" transform="rotate(-15 228 420)"/>
+    
+    <!-- Right Hand / Cuff (Navy Blue) -->
+    <path d="M 370 402 L 335 410 L 325 432 L 360 438 L 375 415 Z" fill="#0F2850"/>
+    <rect x="366" y="405" width="12" height="30" rx="3" fill="#091E3A" transform="rotate(15 372 420)"/>
+
+    <!-- Clasped fingers & handshake center -->
+    <path d="M 265 410 C 275 400 295 402 315 412 C 322 416 325 425 318 432 C 310 438 290 440 275 432 C 268 428 260 418 265 410 Z" fill="#059669" stroke="#0F2850" stroke-width="2"/>
+    <!-- Clasped fingers ridges -->
+    <circle cx="288" cy="428" r="4.5" fill="#0F2850"/>
+    <circle cx="298" cy="429" r="4.5" fill="#0F2850"/>
+    <circle cx="308" cy="427" r="4.5" fill="#0F2850"/>
+
+    <!-- Plant Sprout growing from hands -->
+    <path d="M 300 405 Q 300 375 300 345" stroke="#047857" stroke-width="4" stroke-linecap="round"/>
+    <!-- Left Leaf -->
+    <path d="M 300 365 C 278 360 268 340 274 330 C 288 335 298 350 300 365 Z" fill="#10B981" stroke="#047857" stroke-width="1.5"/>
+    <!-- Right Leaf -->
+    <path d="M 300 355 C 322 350 332 330 326 320 C 312 325 302 340 300 355 Z" fill="#10B981" stroke="#047857" stroke-width="1.5"/>
+    <!-- Top Center Leaf -->
+    <path d="M 300 345 C 290 325 300 305 300 305 C 300 305 310 325 300 345 Z" fill="#059669" stroke="#047857" stroke-width="1.5"/>
+  </g>
+
+  <!-- Established Pill Box / Banner Tag -->
+  <g transform="translate(300, 482)">
+    <!-- Pill background -->
+    <rect x="-85" y="-14" width="170" height="28" rx="14" fill="#0F2850" stroke="url(#goldGrad)" stroke-width="2.5"/>
+    <!-- Text -->
+    <text x="0" y="5" fill="#FEF08A" font-family="'Hind Siliguri', 'Noto Sans Bengali', sans-serif" font-size="16" font-weight="700" text-anchor="middle">
+      — স্থাপিত ২০২০ —
+    </text>
+  </g>
+
+  <!-- Bottom Emerald Ribbon with Gold Border -->
+  <g id="bottom-ribbon" filter="url(#dropShadow)">
+    <!-- Ribbon Left Fold / Tail -->
+    <path d="M 50 515 L 110 500 L 110 545 L 50 560 L 75 538 Z" fill="#022C22" stroke="url(#goldGrad)" stroke-width="2"/>
+    <!-- Ribbon Right Fold / Tail -->
+    <path d="M 550 515 L 490 500 L 490 545 L 550 560 L 525 538 Z" fill="#022C22" stroke="url(#goldGrad)" stroke-width="2"/>
+
+    <!-- Main Front Curved Ribbon -->
+    <path d="M 95 510 Q 300 550 505 510 L 515 555 Q 300 600 85 555 Z" fill="url(#ribbonGrad)" stroke="url(#goldGrad)" stroke-width="3"/>
+
+    <!-- Ribbon Gold Highlights on Top & Bottom Rim -->
+    <path d="M 95 510 Q 300 550 505 510" fill="none" stroke="url(#goldLight)" stroke-width="3.5"/>
+    <path d="M 85 555 Q 300 600 515 555" fill="none" stroke="url(#goldLight)" stroke-width="3.5"/>
+
+    <!-- Ribbon Motto Text in White Bengali Calligraphy -->
+    <text fill="#FFFFFF" font-family="'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif" font-size="27" font-weight="800" letter-spacing="1">
+      <textPath href="#bottomRibbonArc" startOffset="50%" text-anchor="middle">
+        সত্যের পথে স্বপ্নের অভিযান
+      </textPath>
+    </text>
+  </g>
+</svg>
