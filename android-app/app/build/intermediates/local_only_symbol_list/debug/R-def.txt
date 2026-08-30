@@ -1,0 +1,30 @@
+R_DEF: Internal format may change without notice
+local
+color brand_gold
+color brand_gold_dark
+color brand_green
+color primary_card
+color primary_navy
+color status_bar_color
+color text_slate
+color white
+drawable logo
+drawable splash_background
+id btn_retry
+id error_layout
+id progress_bar
+id swipe_refresh
+id web_view
+layout activity_main
+layout error_layout
+mipmap ic_launcher
+string app_name
+string app_name_bn
+string local_web_url
+string no_internet_desc
+string no_internet_title
+string retry
+string web_url
+style Theme.Upolobdi
+style Theme.Upolobdi.Splash
+xml file_paths

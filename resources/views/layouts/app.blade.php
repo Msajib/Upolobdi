@@ -230,6 +230,12 @@
 
             <!-- Right Controls: Language Switcher, Auth & Mobile Hamburger -->
             <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                <!-- Android App Download Shortcut -->
+                <a href="{{ route('app.download') }}" class="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-brand-gold/40 text-brand-gold hover:text-white font-bold text-xs transition-all shadow-md cursor-pointer" title="Download Android App (APK)">
+                    <i class="fa-brands fa-android text-sm text-emerald-400"></i>
+                    <span class="font-bangla">অ্যাপ</span>
+                </a>
+
                 <!-- Language Toggle Button -->
                 <button id="lang-toggle-btn" onclick="toggleLanguage()" class="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-slate-200 transition-all cursor-pointer" title="Toggle Language">
                     <i class="fa-solid fa-globe text-brand-gold text-xs sm:text-sm"></i>
@@ -298,6 +304,22 @@
                 <a href="{{ route('home') }}#events" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a>
                 <a href="{{ route('home') }}#calculator" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_calc">ক্যালকুলেটর</a>
                 <a href="{{ route('home') }}#rules" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_rules">নীতিমালা</a>
+            </div>
+
+            <!-- Mobile Drawer Android App CTA -->
+            <div class="pt-3 border-t border-white/10">
+                <a href="{{ route('app.download') }}" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 border border-brand-gold/40 text-white font-bold text-xs shadow-lg hover:border-brand-gold transition-all">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center text-slate-950 text-base shadow-md">
+                            <i class="fa-brands fa-android"></i>
+                        </div>
+                        <div class="text-left font-bangla">
+                            <span class="block text-white font-bold text-xs">অ্যান্ড্রয়েড অ্যাপ ডাউনলোড</span>
+                            <span class="block text-[10px] text-brand-gold font-sans font-normal">Official APK &bull; Direct Download</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-download text-brand-gold text-sm"></i>
+                </a>
             </div>
         </div>
     </header>
@@ -392,8 +414,9 @@
     <!-- Footer -->
     <footer class="bg-slate-950 border-t border-white/10 pt-16 pb-12 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-                <div class="md:col-span-2 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-12">
+                <!-- Col 1: Brand Info -->
+                <div class="space-y-4">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full p-0.5 bg-white overflow-hidden shadow-lg">
                             <img src="/assets/images/user-logo.jpg" alt="USS Logo" class="w-full h-full object-contain">
@@ -403,8 +426,8 @@
                             <p class="text-xs text-brand-gold font-bangla">সত্যের পথে স্বপ্নের অভিযান — স্থাপিত ২০২০</p>
                         </div>
                     </div>
-                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed pr-6" data-lang-text="footer_desc">
-                        {{ $settings['footer_desc_bn'] ?? '৬ বন্ধুর আন্তরিকতা ও পারস্পরিক আর্থিক সহযোগিতায় ভবিষ্যতের বড় কোনো স্বপ্ন বাস্তবায়নে আমাদের এই সমবায় পদযাত্রা। স্বচ্ছতা, ভ্রাতৃত্ব ও অটুট বন্ধুত্বই আমাদের মূল শক্তি।' }}
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed" data-lang-text="footer_desc">
+                        {{ $settings['footer_desc_bn'] ?? '৬ বন্ধুর আন্তরিকতা ও পারস্পরিক আর্থিক সহযোগিতায় ভবিষ্যতের বড় কোনো স্বপ্ন বাস্তবায়নে আমাদের এই সমবায় পদযাত্রা।' }}
                     </p>
                     <div class="flex items-center gap-3 text-slate-400 text-sm">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -412,20 +435,22 @@
                     </div>
                 </div>
 
+                <!-- Col 2: Quick Links -->
                 <div>
                     <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-4" data-lang-text="footer_links_title">দ্রুত লিংক</h5>
                     <ul class="space-y-2 text-xs sm:text-sm text-slate-400 font-bangla">
-                        <li><a href="#overview" class="hover:text-brand-gold transition-colors" data-lang-text="nav_overview">একনজরে সমিতি</a></li>
-                        <li><a href="#members-carousel" class="hover:text-brand-gold transition-colors" data-lang-text="nav_members">সদস্যবৃন্দ ক্যারোসেল</a></li>
-                        <li><a href="#projects" class="hover:text-brand-gold transition-colors" data-lang-text="nav_projects">বিনিয়োগ প্রকল্পসমূহ</a></li>
-                        <li><a href="#highlights" class="hover:text-brand-gold transition-colors" data-lang-text="nav_highlights">হাইলাইটস মোমেন্টস</a></li>
-                        <li><a href="#events" class="hover:text-brand-gold transition-colors" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a></li>
-                        <li><a href="#rules" class="hover:text-brand-gold transition-colors" data-lang-text="nav_rules">সমিতির বর্তমান নীতিমালা</a></li>
+                        <li><a href="{{ route('home') }}#overview" class="hover:text-brand-gold transition-colors" data-lang-text="nav_overview">একনজরে সমিতি</a></li>
+                        <li><a href="{{ route('home') }}#members-carousel" class="hover:text-brand-gold transition-colors" data-lang-text="nav_members">সদস্যবৃন্দ ক্যারোসেল</a></li>
+                        <li><a href="{{ route('home') }}#projects" class="hover:text-brand-gold transition-colors" data-lang-text="nav_projects">বিনিয়োগ প্রকল্পসমূহ</a></li>
+                        <li><a href="{{ route('home') }}#highlights" class="hover:text-brand-gold transition-colors" data-lang-text="nav_highlights">হাইলাইটস মোমেন্টস</a></li>
+                        <li><a href="{{ route('home') }}#events" class="hover:text-brand-gold transition-colors" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a></li>
+                        <li><a href="{{ route('home') }}#rules" class="hover:text-brand-gold transition-colors" data-lang-text="nav_rules">সমিতির বর্তমান নীতিমালা</a></li>
                     </ul>
                 </div>
 
+                <!-- Col 3: Contact Info -->
                 <div>
-                    <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-4" data-lang-text="footer_contact_title">যোগাযোগ ও জমা</h5>
+                    <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-4" data-lang-text="footer_contact_title">যোগাযোগ ও তথ্য</h5>
                     <ul class="space-y-2.5 text-xs text-slate-400">
                         <li class="flex items-center gap-2">
                             <i class="fa-solid fa-phone text-brand-gold"></i>
@@ -440,6 +465,29 @@
                             <span>{{ $settings['contact_address'] ?? 'ঢাকা, বাংলাদেশ (Dhaka, Bangladesh)' }}</span>
                         </li>
                     </ul>
+                </div>
+
+                <!-- Col 4: Official Android App Download Card -->
+                <div>
+                    <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-4 font-bangla flex items-center gap-2">
+                        <i class="fa-brands fa-android text-emerald-400"></i>
+                        <span>অ্যান্ড্রয়েড অ্যাপ</span>
+                    </h5>
+                    <div class="space-y-3">
+                        <p class="text-xs text-slate-400 font-bangla leading-relaxed">
+                            স্মার্টফোনে আরও দ্রুত কিস্তির হিসাব ও রসিদ ডাউনলোডের জন্য আমাদের অফিসিয়াল অ্যান্ড্রয়েড অ্যাপটি ইনস্টল করুন।
+                        </p>
+                        <a href="{{ route('app.download') }}" class="group flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800/90 border border-brand-gold/40 hover:border-brand-gold shadow-xl hover:shadow-brand-gold/20 transition-all hover:scale-[1.03] text-left">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-400 flex items-center justify-center text-slate-950 text-xl shadow-md flex-shrink-0 group-hover:rotate-6 transition-transform">
+                                <i class="fa-brands fa-android"></i>
+                            </div>
+                            <div class="flex-1 font-bangla">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-widest block font-sans">Official APK</span>
+                                <span class="text-xs font-black text-white group-hover:text-brand-gold transition-colors block">অ্যাপ ডাউনলোড করুন</span>
+                            </div>
+                            <i class="fa-solid fa-circle-arrow-down text-brand-gold text-base group-hover:translate-y-0.5 transition-transform"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 

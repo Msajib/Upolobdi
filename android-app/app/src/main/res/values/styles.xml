@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Upolobdi" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_gold</item>
+        <item name="colorPrimaryVariant">@color/brand_gold_dark</item>
+        <item name="colorOnPrimary">@color/primary_navy</item>
+        <item name="android:statusBarColor">@color/status_bar_color</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/primary_navy</item>
+    </style>
+
+    <style name="Theme.Upolobdi.Splash" parent="Theme.Upolobdi">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+</resources>

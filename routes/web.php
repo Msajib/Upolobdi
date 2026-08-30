@@ -19,6 +19,20 @@ Route::get('/login', function () {
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Native Android App Direct Download
+Route::get('/app/download', function () {
+    $apkPath = public_path('downloads/upolobdi.apk');
+    if (! file_exists($apkPath)) {
+        $apkPath = public_path('upolobdi.apk');
+    }
+    if (file_exists($apkPath)) {
+        return response()->download($apkPath, 'Upolobdi-Somiti.apk', [
+            'Content-Type' => 'application/vnd.android.package-archive',
+        ]);
+    }
+    return redirect()->route('home')->with('info', 'অ্যান্ড্রয়েড অ্যাপ প্যাকেজ প্রস্তুত হচ্ছে...');
+})->name('app.download');
+
 // Member Portal & Role Control Panel (Auth protected)
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

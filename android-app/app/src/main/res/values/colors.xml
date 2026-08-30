@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_navy">#020617</color>
+    <color name="primary_card">#0F172A</color>
+    <color name="brand_gold">#D4AF37</color>
+    <color name="brand_gold_dark">#B38F24</color>
+    <color name="brand_green">#10B981</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_slate">#94A3B8</color>
+    <color name="status_bar_color">#020617</color>
+</resources>
