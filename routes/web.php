@@ -8,7 +8,14 @@ use App\Http\Controllers\DashboardController;
 // Public Portal
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Authentication
+// Authentication & Guest Redirections
+Route::get('/login', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('home', ['login' => '1']);
+})->name('login');
+
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -60,5 +67,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/roles', [DashboardController::class, 'updateMemberRoles'])->name('settings.roles');
 });
 
-// Statamic CP (reserved, credentials in README)
-// Access at: /cp  - login: president@upolobdi.org / password123
+// Fallback Route: Auto-redirect any undefined / non-existent URL to the landing page
+Route::fallback(function () {
+    return redirect()->route('home');
+});

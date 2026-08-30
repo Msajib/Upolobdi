@@ -351,11 +351,19 @@
 
             <form action="{{ route('login.post') }}" method="POST" onsubmit="showPreloader('অনুমোদন ও লগইন যাচাই করা হচ্ছে...', 'উপলব্ধি সমবায় সমিতি (USS)')" class="space-y-4">
                 @csrf
+
+                @if($errors->has('email') || $errors->has('password') || session('error'))
+                <div class="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2 animate-shake">
+                    <i class="fa-solid fa-circle-exclamation text-rose-400 mt-0.5 flex-shrink-0"></i>
+                    <span>{{ $errors->first('email') ?: $errors->first('password') ?: session('error') }}</span>
+                </div>
+                @endif
+
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1" data-lang-text="login_email_label">ইমেইল ঠিকানা</label>
                     <div class="relative">
                         <i class="fa-solid fa-envelope absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
-                        <input type="email" id="login_email" name="email" required placeholder="your@email.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-brand-gold">
+                        <input type="email" id="login_email" name="email" value="{{ old('email') }}" required placeholder="your@email.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-sm text-white focus:outline-none focus:border-brand-gold">
                     </div>
                 </div>
 
@@ -696,6 +704,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             applyLanguage(currentLang);
             hidePreloader();
+
+            // Auto-open Login Modal if ?login=1, ?open_login=1, #login, or unauthenticated redirect
+            const urlParams = new URLSearchParams(window.location.search);
+            const shouldOpenLogin = urlParams.get('login') === '1' || urlParams.get('open_login') === '1' || window.location.hash === '#login' || @json($errors->has('email') || $errors->has('password') || session('open_login') || session('error'));
+            if (shouldOpenLogin) {
+                setTimeout(() => {
+                    openLoginModal();
+                }, 150);
+            }
         });
     </script>
     @stack('scripts')

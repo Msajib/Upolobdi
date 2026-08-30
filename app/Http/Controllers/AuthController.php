@@ -22,12 +22,12 @@ class AuthController extends Controller
         // Find Statamic user
         $user = User::findByEmail($credentials['email']);
         if (! $user) {
-            return back()->withErrors(['email' => 'সঠিক ইমেইল বা পাসওয়ার্ড প্রদান করুন (Invalid credentials)'])->withInput();
+            return back()->withErrors(['email' => 'সঠিক ইমেইল বা পাসওয়ার্ড প্রদান করুন (Invalid credentials)'])->withInput()->with('open_login', true);
         }
 
         // Verify password
         if (! Hash::check($credentials['password'], $user->password())) {
-            return back()->withErrors(['email' => 'ভুল পাসওয়ার্ড (Incorrect password)'])->withInput();
+            return back()->withErrors(['email' => 'ভুল পাসওয়ার্ড (Incorrect password)'])->withInput()->with('open_login', true);
         }
 
         // Login using Laravel Auth
