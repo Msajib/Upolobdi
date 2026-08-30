@@ -58,12 +58,6 @@
         .is-native-app .hide-in-native-app {
             display: none !important;
         }
-    </style>
-    <script>
-        if (navigator.userAgent.indexOf('UpolobdiApp') !== -1 || window.AndroidNative) {
-            document.documentElement.classList.add('is-native-app');
-        }
-    </script>
 
         /* 3D Animations & Floating */
         @keyframes floatSlow {
@@ -147,6 +141,11 @@
                 radial-gradient(at 50% 80%, rgba(10, 37, 64, 0.8) 0px, transparent 60%);
         }
     </style>
+    <script>
+        if (navigator.userAgent.indexOf('UpolobdiApp') !== -1 || window.AndroidNative) {
+            document.documentElement.classList.add('is-native-app');
+        }
+    </script>
     @stack('styles')
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-brand-gold selection:text-brand-navy antialiased">
