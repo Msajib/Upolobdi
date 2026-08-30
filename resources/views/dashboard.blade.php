@@ -924,13 +924,13 @@
             
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">মোট টাকার পরিমাণ (BDT)</label>
-                    <input type="number" id="pay_amount" name="amount" value="1000" min="100" step="500" required oninput="updateMonthsFromAmount(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-brand-gold">
+                    <label class="block font-bold text-slate-300 mb-1">মোট টাকার পরিমাণ (BDT) *</label>
+                    <input type="number" id="pay_amount" name="amount" value="1000" min="1" step="any" required oninput="updateMonthsFromAmount(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-brand-gold">
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">কত মাসের কিস্তি</label>
-                    <input type="number" id="pay_months_count" name="months_count" value="1" min="1" max="36" required oninput="updateAmountFromMonths(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-brand-gold">
+                    <label class="block font-bold text-slate-300 mb-1">কত মাসের কিস্তি *</label>
+                    <input type="number" id="pay_months_count" name="months_count" value="1" min="1" max="60" required oninput="updateAmountFromMonths(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-brand-gold">
                 </div>
             </div>
 
@@ -941,7 +941,7 @@
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">পেমেন্ট মাধ্যম</label>
+                    <label class="block font-bold text-slate-300 mb-1">পেমেন্ট মাধ্যম *</label>
                     <select name="payment_method" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
                         <option value="bkash">bKash (বিকাশ)</option>
                         <option value="nagad">Nagad (নগদ)</option>
@@ -952,19 +952,23 @@
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">পরিশোধের তারিখ</label>
+                    <label class="block font-bold text-slate-300 mb-1">পরিশোধের তারিখ *</label>
                     <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
                 </div>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-300 mb-1">ট্রানজেকশন রেফারেন্স নম্বর (TrxID / Receipt)</label>
-                <input type="text" name="reference_number" placeholder="যেমন: BK92837164 বা Bank Slip No" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-brand-gold">
+                <label class="block font-bold text-slate-300 mb-1">ট্রানজেকশন আইডি বা রেফারেন্স (ঐচ্ছিক / TrxID)</label>
+                <input type="text" name="reference_number" placeholder="যেমন: BK92837164 বা Bank Slip No (না থাকলে খালি রাখুন)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-brand-gold">
             </div>
 
             <div>
-                <label class="block font-bold text-slate-300 mb-1">পেমেন্ট রসিদ / স্ক্রিনশটের ছবি</label>
-                <input type="file" name="proof_image" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-gold file:text-slate-950 hover:file:bg-amber-400">
+                <label class="block font-bold text-slate-300 mb-1">পেমেন্ট রসিদ / স্ক্রিনশটের ছবি (ঐচ্ছিক / Optional Proof)</label>
+                <input type="file" name="proof_image" accept="image/*,.pdf" onchange="previewPaymentProof(this, 'member_proof_preview', 'member_proof_container')" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-gold file:text-slate-950 hover:file:bg-amber-400 cursor-pointer">
+                <span class="text-[10px] text-slate-400 block mt-1">স্ক্রিনশট বা ব্যাংক ডিপোজিট স্লিপ থাকলে যুক্ত করুন (JPG, PNG, WebP, PDF)</span>
+                <div id="member_proof_container" class="hidden mt-2 p-2 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center max-h-36 overflow-hidden">
+                    <img id="member_proof_preview" src="" alt="Proof Preview" class="max-h-32 object-contain rounded-lg">
+                </div>
             </div>
 
             <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-gold to-amber-600 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-black text-sm shadow-xl transition-all cursor-pointer">
@@ -1044,48 +1048,56 @@
             @csrf
             
             <div>
-                <label class="block font-bold text-slate-300 mb-1">কোন সদস্যের কিস্তি</label>
+                <label class="block font-bold text-slate-300 mb-1">কোন সদস্যের কিস্তি *</label>
                 <select name="member_email" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
                     @foreach($allMembers as $mem)
                     <option value="{{ $mem['email'] }}">{{ $mem['bangla_name'] }} ({{ $mem['role_label_bn'] }})</option>
                     @endforeach
-
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">জমার পরিমাণ (BDT)</label>
-                    <input type="number" name="amount" value="1000" min="100" step="500" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
+                    <label class="block font-bold text-slate-300 mb-1">জমার পরিমাণ (BDT) *</label>
+                    <input type="number" id="direct_pay_amount" name="amount" value="1000" min="1" step="any" required oninput="updateDirectMonthsFromAmount(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">মাসের সংখ্যা</label>
-                    <input type="number" name="months_count" value="1" min="1" max="36" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
+                    <label class="block font-bold text-slate-300 mb-1">মাসের সংখ্যা *</label>
+                    <input type="number" id="direct_pay_months_count" name="months_count" value="1" min="1" max="60" required oninput="updateDirectAmountFromMonths(this.value)" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">পেমেন্ট মাধ্যম</label>
+                    <label class="block font-bold text-slate-300 mb-1">পেমেন্ট মাধ্যম *</label>
                     <select name="payment_method" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
                         <option value="cash" selected>Direct Cash (নগদ গ্রহণ)</option>
                         <option value="bkash">bKash (বিকাশ)</option>
                         <option value="nagad">Nagad (নগদ)</option>
+                        <option value="rocket">Rocket (রকেট)</option>
                         <option value="bank">Bank Transfer (ব্যাংক)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">তারিখ</label>
+                    <label class="block font-bold text-slate-300 mb-1">তারিখ *</label>
                     <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
                 </div>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-300 mb-1">রসিদ / মানি রিসিট নম্বর</label>
-                <input type="text" name="reference_number" value="CASH-REC-{{ date('Ymd') }}-{{ rand(100,999) }}" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                <label class="block font-bold text-slate-300 mb-1">রসিদ / মানি রিসিট নম্বর (স্বয়ংক্রিয়)</label>
+                <input type="text" name="reference_number" value="CASH-REC-{{ date('Ymd') }}-{{ rand(100,999) }}" class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
             </div>
 
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm shadow-xl transition-all">
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">প্রমাণপত্র / স্লিপ ছবি (ঐচ্ছিক / Optional)</label>
+                <input type="file" name="proof_image" accept="image/*,.pdf" onchange="previewPaymentProof(this, 'direct_proof_preview', 'direct_proof_container')" class="w-full text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-500 cursor-pointer">
+                <div id="direct_proof_container" class="hidden mt-2 p-2 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center max-h-36 overflow-hidden">
+                    <img id="direct_proof_preview" src="" alt="Direct Proof Preview" class="max-h-32 object-contain rounded-lg">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm shadow-xl transition-all cursor-pointer">
                 নগদ কিস্তি সংরক্ষণ ও অনুমোদন করুন
             </button>
         </form>
@@ -1123,11 +1135,11 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-300 mb-1">অনুমোদিত টাকা (BDT)</label>
-                        <input type="number" id="approve_adjusted_amount" name="adjusted_amount" min="100" step="500" required class="w-full px-3 py-2 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
+                        <input type="number" id="approve_adjusted_amount" name="adjusted_amount" min="1" step="any" required class="w-full px-3 py-2 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-300 mb-1">অনুমোদিত মাসের সংখ্যা</label>
-                        <input type="number" id="approve_adjusted_months" name="adjusted_months_count" min="1" max="36" required class="w-full px-3 py-2 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
+                        <input type="number" id="approve_adjusted_months" name="adjusted_months_count" min="1" max="60" required class="w-full px-3 py-2 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold">
                     </div>
                 </div>
             </div>
@@ -1818,7 +1830,7 @@
     const monthlyRateGlobal = {{ (int)($settings['monthly_installment'] ?? 1000) }};
 
     function updateMonthsFromAmount(amount) {
-        const amt = parseInt(amount, 10) || monthlyRateGlobal;
+        const amt = parseFloat(amount) || monthlyRateGlobal;
         const months = Math.max(1, Math.round(amt / monthlyRateGlobal));
         const monthsInput = document.getElementById('pay_months_count');
         if (monthsInput) {
@@ -1831,6 +1843,41 @@
         const amtInput = document.getElementById('pay_amount');
         if (amtInput) {
             amtInput.value = m * monthlyRateGlobal;
+        }
+    }
+
+    function updateDirectMonthsFromAmount(amount) {
+        const amt = parseFloat(amount) || monthlyRateGlobal;
+        const months = Math.max(1, Math.round(amt / monthlyRateGlobal));
+        const monthsInput = document.getElementById('direct_pay_months_count');
+        if (monthsInput) {
+            monthsInput.value = months;
+        }
+    }
+
+    function updateDirectAmountFromMonths(months) {
+        const m = parseInt(months, 10) || 1;
+        const amtInput = document.getElementById('direct_pay_amount');
+        if (amtInput) {
+            amtInput.value = m * monthlyRateGlobal;
+        }
+    }
+
+    function previewPaymentProof(input, previewId, containerId) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const prev = document.getElementById(previewId);
+                    const container = document.getElementById(containerId);
+                    if (prev && container) {
+                        prev.src = e.target.result;
+                        container.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         }
     }
 

@@ -98,6 +98,69 @@ class DashboardController extends Controller
     }
 
     /**
+     * Normalize payment inputs (Bengali digits to English, strip formatting, normalize method & date)
+     */
+    protected function normalizePaymentInputs(Request $request): void
+    {
+        $bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        $en = ['0','1','2','3','4','5','6','7','8','9'];
+        $data = [];
+
+        if ($request->has('amount')) {
+            $amt = (string) $request->input('amount');
+            $amt = str_replace($bn, $en, $amt);
+            $amt = preg_replace('/[^0-9.]/', '', $amt);
+            $data['amount'] = $amt !== '' ? (float) $amt : null;
+        }
+
+        if ($request->has('months_count')) {
+            $m = (string) $request->input('months_count');
+            $m = str_replace($bn, $en, $m);
+            $m = preg_replace('/[^0-9]/', '', $m);
+            $data['months_count'] = $m !== '' ? (int) $m : null;
+        }
+
+        if ($request->has('payment_method')) {
+            $pm = strtolower(trim((string) $request->input('payment_method')));
+            $pmMap = [
+                'cash' => 'cash',
+                'direct cash' => 'cash',
+                'নগদ গ্রহণ' => 'cash',
+                'bkash' => 'bkash',
+                'বিকাশ' => 'bkash',
+                'nagad' => 'nagad',
+                'নগদ' => 'nagad',
+                'rocket' => 'rocket',
+                'রকেট' => 'rocket',
+                'bank' => 'bank',
+                'bank transfer' => 'bank',
+                'ব্যাংক' => 'bank',
+            ];
+            $data['payment_method'] = $pmMap[$pm] ?? $pm;
+        }
+
+        if ($request->has('payment_date')) {
+            $pDate = (string) $request->input('payment_date');
+            $pDate = str_replace($bn, $en, $pDate);
+            $parsedDate = date('Y-m-d', strtotime(trim($pDate)));
+            if ($parsedDate && $parsedDate !== '1970-01-01') {
+                $data['payment_date'] = $parsedDate;
+            }
+        }
+
+        if ($request->has('reference_number')) {
+            $ref = trim((string) $request->input('reference_number'));
+            $data['reference_number'] = $ref !== '' ? $ref : ('CASH-REC-' . date('Ymd') . '-' . rand(100, 999));
+        } else {
+            $data['reference_number'] = 'CASH-REC-' . date('Ymd') . '-' . rand(100, 999);
+        }
+
+        if (!empty($data)) {
+            $request->merge($data);
+        }
+    }
+
+    /**
      * Create Direct Payment Entry by Cashier or Super Admin (e.g. Cash Deposit)
      */
     public function createDirectPayment(Request $request)
@@ -111,24 +174,24 @@ class DashboardController extends Controller
             return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (Cashier or President Only)']);
         }
 
+        $this->normalizePaymentInputs($request);
+
         $validated = $request->validate([
             'member_email' => 'required|email',
-            'amount' => 'required|numeric|min:100',
-            'months_count' => 'nullable|integer|min:1|max:36',
+            'amount' => 'required|numeric|min:1',
+            'months_count' => 'nullable|integer|min:1|max:60',
             'payment_method' => 'required|string|in:cash,bkash,nagad,rocket,bank',
-            'reference_number' => 'required|string|max:100',
+            'reference_number' => 'nullable|string|max:100',
             'payment_date' => 'required|date',
-            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'proof_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,bmp,heic,heif,pdf|max:20480',
         ], [
             'member_email.required' => 'সদস্যের ইমেইল নির্বাচন করা আবশ্যক।',
             'amount.required' => 'টাকার পরিমাণ প্রদান করা আবশ্যক।',
-            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১০০ টাকা হতে হবে।',
+            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১ টাকা হতে হবে।',
             'payment_method.required' => 'পেমেন্ট মাধ্যম সিলেক্ট করুন।',
-            'reference_number.required' => 'রেফারেন্স বা রসিদ নম্বর প্রদান করুন।',
             'payment_date.required' => 'জমার তারিখ প্রদান করুন।',
-            'proof_image.image' => 'প্রমাণপত্র অবশ্যই একটি ছবি (JPG, PNG, WebP) হতে হবে।',
-            'proof_image.mimes' => 'ছবির ফরম্যাট JPG, PNG, WebP বা GIF হতে হবে।',
-            'proof_image.max' => 'ছবির সাইজ সর্বোচ্চ ১০ মেগাবাইট (10MB) হতে পারে।',
+            'proof_image.file' => 'প্রমাণপত্র অবশ্যই একটি ফাইল (ছবি বা রসিদ) হতে হবে।',
+            'proof_image.max' => 'ফাইলের সাইজ সর্বোচ্চ ২০ মেগাবাইট (20MB) হতে পারে।',
         ]);
 
         $settings = $this->somitiService->getSettings();
@@ -594,22 +657,22 @@ class DashboardController extends Controller
             return redirect()->route('home');
         }
 
+        $this->normalizePaymentInputs($request);
+
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:100',
-            'months_count' => 'nullable|integer|min:1|max:36',
+            'amount' => 'required|numeric|min:1',
+            'months_count' => 'nullable|integer|min:1|max:60',
             'payment_method' => 'required|string|in:bkash,nagad,rocket,bank,cash',
-            'reference_number' => 'required|string|max:100',
+            'reference_number' => 'nullable|string|max:100',
             'payment_date' => 'required|date',
-            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'proof_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,bmp,heic,heif,pdf|max:20480',
         ], [
             'amount.required' => 'টাকার পরিমাণ প্রদান করা আবশ্যক।',
-            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১০০ টাকা হতে হবে।',
+            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১ টাকা হতে হবে।',
             'payment_method.required' => 'পেমেন্ট মাধ্যম সিলেক্ট করুন।',
-            'reference_number.required' => 'ট্রানজেকশন আইডি (TrxID) বা রেফারেন্স নম্বর দিন।',
             'payment_date.required' => 'জমার তারিখ প্রদান করুন।',
-            'proof_image.image' => 'পেমেন্ট স্লিপ অবশ্যই ছবি ফাইল (JPG, PNG, WebP) হতে হবে।',
-            'proof_image.mimes' => 'ছবির ফরম্যাট JPG, PNG, WebP বা GIF হতে হবে।',
-            'proof_image.max' => 'ছবির সাইজ সর্বোচ্চ ১০ মেগাবাইট (10MB) হতে পারে।',
+            'proof_image.file' => 'পেমেন্ট স্লিপ অবশ্যই ছবি বা ফাইল (JPG, PNG, WebP, PDF) হতে হবে।',
+            'proof_image.max' => 'ফাইলের সাইজ সর্বোচ্চ ২০ মেগাবাইট (20MB) হতে পারে।',
         ]);
 
         $settings = $this->somitiService->getSettings();

@@ -55,6 +55,15 @@
         .font-bangla {
             font-family: 'Hind Siliguri', sans-serif;
         }
+        .is-native-app .hide-in-native-app {
+            display: none !important;
+        }
+    </style>
+    <script>
+        if (navigator.userAgent.indexOf('UpolobdiApp') !== -1 || window.AndroidNative) {
+            document.documentElement.classList.add('is-native-app');
+        }
+    </script>
 
         /* 3D Animations & Floating */
         @keyframes floatSlow {
@@ -230,12 +239,6 @@
 
             <!-- Right Controls: Language Switcher, Auth & Mobile Hamburger -->
             <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-                <!-- Android App Download Shortcut -->
-                <a href="{{ route('app.download') }}" class="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-brand-gold/40 text-brand-gold hover:text-white font-bold text-xs transition-all shadow-md cursor-pointer" title="Download Android App (APK)">
-                    <i class="fa-brands fa-android text-sm text-emerald-400"></i>
-                    <span class="font-bangla">অ্যাপ</span>
-                </a>
-
                 <!-- Language Toggle Button -->
                 <button id="lang-toggle-btn" onclick="toggleLanguage()" class="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-slate-200 transition-all cursor-pointer" title="Toggle Language">
                     <i class="fa-solid fa-globe text-brand-gold text-xs sm:text-sm"></i>
@@ -304,22 +307,6 @@
                 <a href="{{ route('home') }}#events" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a>
                 <a href="{{ route('home') }}#calculator" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_calc">ক্যালকুলেটর</a>
                 <a href="{{ route('home') }}#rules" onclick="toggleMobileMenu()" class="block py-1.5 text-slate-200 hover:text-brand-gold" data-lang-text="nav_rules">নীতিমালা</a>
-            </div>
-
-            <!-- Mobile Drawer Android App CTA -->
-            <div class="pt-3 border-t border-white/10">
-                <a href="{{ route('app.download') }}" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 border border-brand-gold/40 text-white font-bold text-xs shadow-lg hover:border-brand-gold transition-all">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center text-slate-950 text-base shadow-md">
-                            <i class="fa-brands fa-android"></i>
-                        </div>
-                        <div class="text-left font-bangla">
-                            <span class="block text-white font-bold text-xs">অ্যান্ড্রয়েড অ্যাপ ডাউনলোড</span>
-                            <span class="block text-[10px] text-brand-gold font-sans font-normal">Official APK &bull; Direct Download</span>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-download text-brand-gold text-sm"></i>
-                </a>
             </div>
         </div>
     </header>
@@ -468,7 +455,7 @@
                 </div>
 
                 <!-- Col 4: Official Android App Download Card -->
-                <div>
+                <div class="hide-in-native-app">
                     <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-4 font-bangla flex items-center gap-2">
                         <i class="fa-brands fa-android text-emerald-400"></i>
                         <span>অ্যান্ড্রয়েড অ্যাপ</span>
