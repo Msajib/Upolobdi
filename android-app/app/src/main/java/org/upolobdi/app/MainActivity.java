@@ -60,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
         return AppConfig.BASE_URL;
     }
 
+    // Only Upolobdi pages are allowed to render inside the app
+    private boolean isAllowedHost(Uri uri) {
+        if (uri == null || uri.getHost() == null) return false;
+        String host = uri.getHost().toLowerCase(Locale.ROOT);
+        for (String allowed : AppConfig.ALLOWED_HOSTS) {
+            if (host.equals(allowed)) return true;
+        }
+        return false;
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,8 +214,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceivedSslError(WebView view, android.webkit.SslErrorHandler handler, android.net.http.SslError error) {
-            // Proceed on SSL in case of self-signed dev certs or let it proceed smoothly
-            handler.proceed();
+            // Never accept an invalid certificate: a mismatched cert means we reached
+            // the wrong website on the server, so block it instead of rendering it.
+            handler.cancel();
+            showErrorLayout();
         }
 
         @Override
@@ -232,6 +244,15 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } catch (Exception ignored) {
                 }
+            }
+
+            // Any non-Upolobdi website opens in the external browser, never inside the app
+            if (!isAllowedHost(request.getUrl())) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, request.getUrl()));
+                } catch (Exception ignored) {
+                }
+                return true;
             }
 
             return false;
