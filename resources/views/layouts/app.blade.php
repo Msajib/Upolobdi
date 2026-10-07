@@ -59,6 +59,66 @@
             display: none !important;
         }
 
+        /* Modern Glassmorphism & Depth Tokens */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(245, 158, 11, 0.25);
+            transform: translateY(-4px);
+        }
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* 3D Perspective Card Tilt */
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+        }
+        .tilt-inner {
+            transform: translateZ(20px);
+        }
+
+        /* Text Gradients */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFFDF0 0%, #F59E0B 50%, #D97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-emerald {
+            background: linear-gradient(135deg, #ECFDF5 0%, #10B981 50%, #047857 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-silver {
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glow effects */
+        .glow-gold {
+            box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.45);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.45);
+        }
+
         /* 3D Animations & Floating */
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -76,6 +136,10 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @keyframes shimmerSlow {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
         
         .animate-float {
             animation: floatSlow 5s ease-in-out infinite;
@@ -91,10 +155,28 @@
         .marquee-track {
             display: flex;
             width: max-content;
-            animation: marquee 25s linear infinite;
+            animation: marquee 28s linear infinite;
         }
         .marquee-track:hover {
             animation-play-state: paused;
+        }
+
+        /* Navigation Active Pill Indicator */
+        .nav-link {
+            position: relative;
+            padding: 0.35rem 0.65rem;
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+        }
+        .nav-link:hover {
+            color: #F59E0B;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-link.active {
+            color: #F59E0B;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.3);
         }
 
         /* Masonry Grid CSS */
@@ -136,8 +218,8 @@
         .hero-bg {
             background-color: #061729;
             background-image: 
-                radial-gradient(at 10% 15%, rgba(0, 135, 90, 0.3) 0px, transparent 50%),
-                radial-gradient(at 90% 20%, rgba(245, 158, 11, 0.25) 0px, transparent 50%),
+                radial-gradient(at 10% 15%, rgba(0, 135, 90, 0.25) 0px, transparent 50%),
+                radial-gradient(at 90% 20%, rgba(245, 158, 11, 0.2) 0px, transparent 50%),
                 radial-gradient(at 50% 80%, rgba(10, 37, 64, 0.8) 0px, transparent 60%);
         }
     </style>
@@ -226,14 +308,14 @@
             </a>
 
             <!-- Desktop Menu Links -->
-            <nav class="hidden lg:flex items-center gap-5 text-sm font-semibold">
-                <a href="{{ route('home') }}#overview" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_overview">একনজরে</a>
-                <a href="{{ route('home') }}#members-carousel" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_members">সদস্যবৃন্দ</a>
-                <a href="{{ route('home') }}#projects" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_projects">প্রকল্পসমূহ</a>
-                <a href="{{ route('home') }}#highlights" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_highlights">হাইলাইটস</a>
-                <a href="{{ route('home') }}#events" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a>
-                <a href="{{ route('home') }}#calculator" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_calc">ক্যালকুলেটর</a>
-                <a href="{{ route('home') }}#rules" class="text-slate-300 hover:text-brand-gold transition-colors" data-lang-text="nav_rules">নীতিমালা</a>
+            <nav id="desktop-nav" class="hidden lg:flex items-center gap-2 text-sm font-semibold">
+                <a href="{{ route('home') }}#overview" class="nav-link text-slate-300" data-section="overview" data-lang-text="nav_overview">একনজরে</a>
+                <a href="{{ route('home') }}#members-carousel" class="nav-link text-slate-300" data-section="members-carousel" data-lang-text="nav_members">সদস্যবৃন্দ</a>
+                <a href="{{ route('home') }}#projects" class="nav-link text-slate-300" data-section="projects" data-lang-text="nav_projects">প্রকল্পসমূহ</a>
+                <a href="{{ route('home') }}#highlights" class="nav-link text-slate-300" data-section="highlights" data-lang-text="nav_highlights">হাইলাইটস</a>
+                <a href="{{ route('home') }}#events" class="nav-link text-slate-300" data-section="events" data-lang-text="nav_events">ইভেন্ট গ্যালারি</a>
+                <a href="{{ route('home') }}#calculator" class="nav-link text-slate-300" data-section="calculator" data-lang-text="nav_calc">ক্যালকুলেটর</a>
+                <a href="{{ route('home') }}#rules" class="nav-link text-slate-300" data-section="rules" data-lang-text="nav_rules">নীতিমালা</a>
             </nav>
 
             <!-- Right Controls: Language Switcher, Auth & Mobile Hamburger -->
@@ -735,9 +817,66 @@
             }
         }
 
+        // Scroll-Spy for Desktop Navbar
+        function initScrollSpy() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('#desktop-nav .nav-link');
+            if (!sections.length || !navLinks.length) return;
+
+            function onScroll() {
+                const scrollPos = window.scrollY + 120;
+                let currentSectionId = '';
+
+                sections.forEach(sec => {
+                    const top = sec.offsetTop;
+                    const height = sec.offsetHeight;
+                    if (scrollPos >= top && scrollPos < top + height) {
+                        currentSectionId = sec.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-section') === currentSectionId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        }
+
+        // 3D Card Tilt on Hover (Desktop)
+        function initCard3DTilt() {
+            if (window.matchMedia('(pointer: coarse)').matches) return; // Skip on touch-only devices
+
+            const cards = document.querySelectorAll('.tilt-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -8;
+                    const rotateY = ((x - centerX) / centerX) * 8;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             applyLanguage(currentLang);
             hidePreloader();
+            initScrollSpy();
+            initCard3DTilt();
 
             // Auto-open Login Modal if ?login=1, ?open_login=1, #login, or unauthenticated redirect
             const urlParams = new URLSearchParams(window.location.search);

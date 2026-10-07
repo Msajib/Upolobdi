@@ -6,6 +6,6 @@
     <string name="no_internet_desc">দয়া করে আপনার ইন্টারনেট সংযোগ বা ওয়াইফাই পরীক্ষা করুন।</string>
     <string name="retry">পুনরায় চেষ্টা করুন</string>
     <!-- Change this URL to your deployed domain or local IP when sharing -->
-    <string name="web_url">https://upolobdi.srotbd.com</string>
+    <string name="web_url">https://www.upolobdi.com</string>
     <string name="local_web_url">http://10.0.2.2:8000</string>
 </resources>

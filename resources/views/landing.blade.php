@@ -248,27 +248,27 @@
 
 
 
-<!-- Hero Section with 3D Animated USS Emblem -->
+<!-- Hero Section with 3D Animated USS Emblem & Constellation -->
 <section id="overview" class="hero-bg relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -top-10 -left-10 w-80 h-80 bg-brand-green/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-10 -left-10 w-96 h-96 bg-brand-green/20 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                 
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-pill border border-brand-gold/30 shadow-lg">
                     <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
                     <span class="text-xs font-bold text-amber-300 tracking-wide font-bangla">
-                        <span data-lang-bn>বন্ধুদের অটুট ভ্রাতৃত্ব ও সমবায় উদ্যোগ</span>
-                        <span data-lang-en style="display:none;">Cooperative Venture of Lifelong Friends</span>
+                        <span data-lang-bn>৬ বন্ধুর অটুট ভ্রাতৃত্ব ও সমবায় উদ্যোগ</span>
+                        <span data-lang-en style="display:none;">Cooperative Venture of 6 Lifelong Friends</span>
                     </span>
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight font-bangla">
-                    <span data-lang-bn>{{ $settings['motto_bn'] ?? 'সত্যের পথে স্বপ্নের অভিযান' }}</span>
-                    <span data-lang-en style="display:none;">{{ $settings['motto_en'] ?? 'Journey of Dreams on the Path of Truth' }}</span>
+                    <span class="text-gradient-gold" data-lang-bn>{{ $settings['motto_bn'] ?? 'সত্যের পথে স্বপ্নের অভিযান' }}</span>
+                    <span class="text-gradient-gold" data-lang-en style="display:none;">{{ $settings['motto_en'] ?? 'Journey of Dreams on the Path of Truth' }}</span>
                 </h1>
 
                 <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-bangla">
@@ -282,20 +282,20 @@
 
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-brand-green to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white font-extrabold text-sm shadow-xl shadow-emerald-950/50 hover:scale-105 transition-all flex items-center gap-2.5">
+                        <a href="{{ route('dashboard') }}" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-brand-green to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white font-extrabold text-sm shadow-xl shadow-emerald-950/60 hover:scale-105 transition-all flex items-center gap-2.5 glow-emerald">
                             <i class="fa-solid fa-gauge-high"></i>
                             <span data-lang-bn>সদস্য পোর্টাল খুলুন</span>
                             <span data-lang-en style="display:none;">Open Member Portal</span>
                         </a>
                     @else
-                        <button onclick="openLoginModal()" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-brand-gold to-amber-600 hover:from-amber-400 hover:to-amber-600 text-brand-navyDark font-black text-sm shadow-xl shadow-amber-950/50 hover:scale-105 transition-all flex items-center gap-2.5 cursor-pointer">
+                        <button onclick="openLoginModal()" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-brand-gold to-amber-600 hover:from-amber-400 hover:to-amber-600 text-brand-navyDark font-black text-sm shadow-xl shadow-amber-950/60 hover:scale-105 transition-all flex items-center gap-2.5 cursor-pointer glow-gold">
                             <i class="fa-solid fa-arrow-right-to-bracket"></i>
                             <span data-lang-bn>সদস্য লগইন</span>
                             <span data-lang-en style="display:none;">Member Sign In</span>
                         </button>
                     @endauth
 
-                    <a href="#projects" class="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-sm backdrop-blur-md transition-all flex items-center gap-2">
+                    <a href="#projects" class="px-6 py-3.5 rounded-2xl glass-card hover:border-brand-gold/50 text-white font-bold text-sm transition-all flex items-center gap-2">
                         <i class="fa-solid fa-briefcase text-brand-gold"></i>
                         <span data-lang-bn>বিনিয়োগ প্রকল্পসমূহ</span>
                         <span data-lang-en style="display:none;">Investment Projects</span>
@@ -303,23 +303,23 @@
                 </div>
 
                 <div class="pt-6 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 border-t border-white/10">
-                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                        <span class="block text-xl sm:text-2xl font-black text-brand-gold font-mono">{{ $overview['total_members'] }}</span>
-                        <span class="text-[11px] text-slate-400 font-bangla">
+                    <div class="p-4 rounded-2xl glass-card text-center tilt-card">
+                        <span class="block text-2xl sm:text-3xl font-black text-brand-gold font-mono" data-counter="{{ $overview['total_members'] }}">{{ $overview['total_members'] }}</span>
+                        <span class="text-[11px] text-slate-400 font-bangla block mt-0.5">
                             <span data-lang-bn>প্রতিষ্ঠাতা সদস্য</span>
                             <span data-lang-en style="display:none;">Founding Members</span>
                         </span>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                        <span class="block text-xl sm:text-2xl font-black text-emerald-400 font-mono">{{ number_format($overview['monthly_installment']) }} ৳</span>
-                        <span class="text-[11px] text-slate-400 font-bangla">
-                            <span data-lang-bn>মাসিক কিস্তি</span>
-                            <span data-lang-en style="display:none;">Monthly Fee</span>
+                    <div class="p-4 rounded-2xl glass-card text-center tilt-card">
+                        <span class="block text-2xl sm:text-3xl font-black text-emerald-400 font-mono" data-counter="{{ $overview['monthly_installment'] }}">{{ number_format($overview['monthly_installment']) }}</span>
+                        <span class="text-[11px] text-slate-400 font-bangla block mt-0.5">
+                            <span data-lang-bn>মাসিক কিস্তি (৳)</span>
+                            <span data-lang-en style="display:none;">Monthly Fee (৳)</span>
                         </span>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                        <span class="block text-xl sm:text-2xl font-black text-sky-400 font-mono">{{ $overview['est_year'] }}</span>
-                        <span class="text-[11px] text-slate-400 font-bangla">
+                    <div class="p-4 rounded-2xl glass-card text-center tilt-card">
+                        <span class="block text-2xl sm:text-3xl font-black text-sky-400 font-mono" data-counter="{{ $overview['est_year'] }}">{{ $overview['est_year'] }}</span>
+                        <span class="text-[11px] text-slate-400 font-bangla block mt-0.5">
                             <span data-lang-bn>প্রতিষ্ঠাকাল</span>
                             <span data-lang-en style="display:none;">Founded</span>
                         </span>
@@ -328,14 +328,25 @@
 
             </div>
 
-            <!-- 3D Interactive Rotating Emblem Right Column -->
+            <!-- 3D Interactive Rotating Emblem Right Column with 6 Orbiting Brotherhood Nodes -->
             <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
-                <div class="relative w-72 h-72 sm:w-96 sm:h-96 flex items-center justify-center">
-                    <div id="three-container" class="w-full h-full cursor-grab active:cursor-grabbing rounded-full"></div>
+                <div class="relative w-80 h-80 sm:w-[420px] sm:h-[420px] flex items-center justify-center">
+                    
+                    <!-- Dedicated WebGL Three.js Container -->
+                    <div id="three-container" class="w-full h-full cursor-grab active:cursor-grabbing rounded-full relative z-10"></div>
+
+                    <!-- 3D Raycasting Floating Member Tooltip -->
+                    <div id="three-brother-tooltip" class="absolute pointer-events-none opacity-0 transition-all duration-200 px-3.5 py-2 rounded-2xl bg-slate-950/95 border border-brand-gold/60 text-white text-xs font-bangla shadow-2xl backdrop-blur-xl z-30 flex items-center gap-2 transform -translate-x-1/2 -translate-y-full">
+                        <span id="three-tooltip-icon" class="text-base">👑</span>
+                        <div>
+                            <span id="three-tooltip-name" class="font-bold text-amber-300 block leading-tight"></span>
+                            <span id="three-tooltip-role" class="text-[10px] text-slate-400 block font-mono"></span>
+                        </div>
+                    </div>
 
                     <!-- Private Fund Badge on Public Hero (Unblurred for logged in users) -->
-                    <div class="absolute -top-3 -right-2 p-3 rounded-2xl bg-slate-900/90 border {{ Auth::check() ? 'border-emerald-500/50' : 'border-amber-500/40' }} backdrop-blur-xl shadow-2xl animate-float flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-xl {{ Auth::check() ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' }} flex items-center justify-center">
+                    <div class="absolute -top-3 -right-2 p-3.5 rounded-2xl bg-slate-900/90 border {{ Auth::check() ? 'border-emerald-500/50 glow-emerald' : 'border-amber-500/40 glow-gold' }} backdrop-blur-xl shadow-2xl animate-float flex items-center gap-3 z-20">
+                        <div class="w-9 h-9 rounded-xl {{ Auth::check() ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' }} flex items-center justify-center text-sm">
                             <i class="fa-solid {{ Auth::check() ? 'fa-vault' : 'fa-lock' }}"></i>
                         </div>
                         <div>
@@ -349,22 +360,24 @@
                         </div>
                     </div>
 
-                    <div class="absolute -bottom-3 -left-2 p-3 rounded-2xl bg-slate-900/90 border border-emerald-500/40 backdrop-blur-xl shadow-2xl animate-float flex items-center gap-3" style="animation-delay: 1.5s;">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <div class="absolute -bottom-3 -left-2 p-3.5 rounded-2xl bg-slate-900/90 border border-emerald-500/40 backdrop-blur-xl shadow-2xl animate-float flex items-center gap-3 z-20" style="animation-delay: 1.5s;">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
                             <i class="fa-solid fa-handshake"></i>
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-400 block font-bangla">১০০% বন্ধুত্বের বন্ধন</span>
-                            <span class="text-xs font-black text-emerald-300">{{ $overview['total_members'] }} জন সদস্য</span>
+                            <span class="text-xs font-black text-emerald-300">{{ $overview['total_members'] }} জন প্রতিষ্ঠাতা ভাই</span>
                         </div>
                     </div>
                 </div>
 
-                <p class="text-xs text-slate-400 mt-4 flex items-center gap-1.5">
+                <div class="mt-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                     <i class="fa-solid fa-arrows-spin text-brand-gold animate-spin" style="animation-duration: 6s;"></i>
-                    <span data-lang-bn>লোগোটি মাউস দিয়ে ঘুরিয়ে ৩ডি রূপ দেখুন</span>
-                    <span data-lang-en style="display:none;">Interactive 3D Emblem — Drag or Hover to Rotate</span>
-                </p>
+                    <span class="text-[11px] text-slate-300 font-bangla">
+                        <span data-lang-bn>লোগো ও ভাইদের কক্ষপথ মাউস/আঙুল দিয়ে ৩ডি রূপ ঘুরিয়ে দেখুন</span>
+                        <span data-lang-en style="display:none;">Interactive 3D Vault & Brotherhood Orbit — Drag to Rotate</span>
+                    </span>
+                </div>
             </div>
 
         </div>
@@ -372,34 +385,34 @@
 </section>
 
 <!-- Auto-Moving 3D Carousel of All 6 Members -->
-<section id="members-carousel" class="py-14 bg-slate-900/90 border-y border-white/10 overflow-hidden relative">
+<section id="members-carousel" class="py-16 bg-slate-950/80 border-y border-white/10 overflow-hidden relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
         <span class="text-xs font-bold text-brand-gold uppercase tracking-widest font-mono">Founding Brothers</span>
         <h2 class="text-2xl sm:text-3xl font-black text-white font-bangla mt-1">
-            <span data-lang-bn>আমাদের বন্ধু ও কার্যনির্বাহী পরিষদ</span>
-            <span data-lang-en style="display:none;">Our Founding Brothers & Committee</span>
+            <span class="text-gradient-gold" data-lang-bn>আমাদের ৬ বন্ধু ও কার্যনির্বাহী পরিষদ</span>
+            <span class="text-gradient-gold" data-lang-en style="display:none;">Our 6 Founding Brothers & Committee</span>
         </h2>
-        <p class="text-xs text-slate-400 font-bangla mt-1">ক্যারোসেলটি স্বয়ংক্রিয়ভাবে চলমান (মাউস রাখলে থামবে)</p>
+        <p class="text-xs text-slate-400 font-bangla mt-1">ক্যারোসেলটি স্বয়ংক্রিয়ভাবে চলমান (কার্ডে মাউস রাখলে থামবে ও ৩ডি রূপ নেবে)</p>
     </div>
 
-    <!-- Infinite Auto Moving Marquee Track -->
+    <!-- Infinite Auto Moving Marquee Track with 3D Tilt Cards -->
     <div class="w-full overflow-hidden">
         <div class="marquee-track flex gap-6 px-4">
             @foreach(array_merge($members, $members) as $m)
-            <div class="w-64 sm:w-72 p-5 rounded-3xl bg-slate-950 border border-white/15 hover:border-brand-gold/50 shadow-2xl flex-shrink-0 flex items-center gap-4 group transition-transform hover:scale-105">
-                <div class="w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-gold/40 p-0.5 bg-gradient-to-tr from-brand-gold to-brand-green flex-shrink-0 group-hover:rotate-6 transition-transform">
-                    <img src="{{ $m['avatar'] ?? '/assets/images/avatar-default.svg' }}" alt="{{ $m['name'] }}" class="w-full h-full object-cover rounded-xl">
+            <div class="tilt-card w-72 sm:w-80 p-5 rounded-3xl glass-card flex-shrink-0 flex items-center gap-4 group">
+                <div class="tilt-inner w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-gold/50 p-0.5 bg-gradient-to-tr from-brand-gold via-amber-500 to-brand-green flex-shrink-0 group-hover:scale-110 transition-transform shadow-lg">
+                    <img src="{{ $m['avatar'] ?? '/assets/images/avatar-default.svg' }}" alt="{{ $m['name'] }}" class="w-full h-full object-cover rounded-xl bg-slate-900">
                 </div>
-                <div class="space-y-1">
+                <div class="space-y-1 tilt-inner flex-1">
                     <div class="flex items-center gap-1.5">
                         @if($m['role'] === 'superadmin')
-                            <span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold">সভাপতি</span>
+                            <span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">👑 সভাপতি</span>
                         @elseif($m['role'] === 'admin')
-                            <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold">সহ-সভাপতি</span>
+                            <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] font-bold">🎖️ সহ-সভাপতি</span>
                         @elseif($m['role'] === 'cashier')
-                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">ক্যাশিয়ার</span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">💼 ক্যাশিয়ার</span>
                         @else
-                            <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 text-[10px] font-bold">সদস্য</span>
+                            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10 text-[10px] font-bold">👤 কার্যনির্বাহী সদস্য</span>
                         @endif
                     </div>
                     <h4 class="text-sm font-bold text-white font-bangla group-hover:text-brand-gold transition-colors">
@@ -407,9 +420,8 @@
                         <span data-lang-en style="display:none;">{{ $m['name'] }}</span>
                     </h4>
                     <p class="text-[11px] text-slate-400 font-bangla line-clamp-1">{{ $m['designation'] }}</p>
-                    <p class="text-[10px] text-slate-500 font-mono"><i class="fa-solid fa-phone mr-1"></i>{{ $m['phone'] }}</p>
+                    <p class="text-[10px] text-slate-500 font-mono flex items-center gap-1"><i class="fa-solid fa-phone text-[9px] text-brand-gold"></i>{{ $m['phone'] }}</p>
                 </div>
-
             </div>
             @endforeach
         </div>
@@ -435,16 +447,16 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- Total Fund Card (Unblurred for Auth Users, Blurred for Public Guests) -->
-            <div class="p-6 rounded-3xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border {{ Auth::check() ? 'border-emerald-500/40 hover:border-emerald-500/70' : 'border-amber-500/30 hover:border-amber-500/60' }} transition-all hover:scale-105 shadow-xl group relative overflow-hidden">
+            <div class="tilt-card p-6 rounded-3xl glass-card border {{ Auth::check() ? 'border-emerald-500/40 hover:border-emerald-500/70 glow-emerald' : 'border-amber-500/30 hover:border-amber-500/60 glow-gold' }} shadow-xl group relative overflow-hidden">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-xs font-bold {{ Auth::check() ? 'text-emerald-400' : 'text-amber-400' }} uppercase tracking-wider font-bangla">মোট সংরক্ষিত তহবিল</span>
-                    <div class="w-10 h-10 rounded-xl {{ Auth::check() ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' }} flex items-center justify-center text-lg">
+                    <div class="w-10 h-10 rounded-xl {{ Auth::check() ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' }} flex items-center justify-center text-lg shadow-inner">
                         <i class="fa-solid {{ Auth::check() ? 'fa-vault' : 'fa-lock' }}"></i>
                     </div>
                 </div>
                 @auth
                     <h3 class="text-3xl font-black text-emerald-400 font-mono mb-2">
-                        {{ number_format($overview['total_approved_fund']) }} <span class="text-sm font-sans text-emerald-300">BDT</span>
+                        <span data-counter="{{ $overview['total_approved_fund'] }}">{{ number_format($overview['total_approved_fund']) }}</span> <span class="text-sm font-sans text-emerald-300">BDT</span>
                     </h3>
                     <p class="text-xs text-emerald-300/90 font-bangla flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-check text-[10px]"></i>
@@ -462,36 +474,42 @@
                 @endauth
             </div>
 
-            <div class="p-6 rounded-3xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-sky-500/30 hover:border-sky-500/60 transition-all hover:scale-105 shadow-xl group">
+            <div class="tilt-card p-6 rounded-3xl glass-card border border-sky-500/30 hover:border-sky-500/60 shadow-xl group">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-xs font-bold text-sky-400 uppercase tracking-wider font-bangla">যাচাই প্রক্রিয়ায় কিস্তি</span>
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform shadow-inner">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
                 </div>
-                <h3 class="text-3xl font-black text-white font-mono mb-2">{{ $overview['total_pending_transactions'] }} <span class="text-sm font-sans text-sky-400">টি স্লিপ</span></h3>
+                <h3 class="text-3xl font-black text-white font-mono mb-2">
+                    <span data-counter="{{ $overview['total_pending_transactions'] }}">{{ $overview['total_pending_transactions'] }}</span> <span class="text-sm font-sans text-sky-400">টি স্লিপ</span>
+                </h3>
                 <p class="text-xs text-slate-400 font-bangla">ক্যাশিয়ার রিভিউ কিউতে অপেক্ষমাণ</p>
             </div>
 
-            <div class="p-6 rounded-3xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-emerald-500/30 hover:border-emerald-500/60 transition-all hover:scale-105 shadow-xl group">
+            <div class="tilt-card p-6 rounded-3xl glass-card border border-emerald-500/30 hover:border-emerald-500/60 shadow-xl group">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider font-bangla">মোট সফল জমা</span>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform shadow-inner">
                         <i class="fa-solid fa-receipt"></i>
                     </div>
                 </div>
-                <h3 class="text-3xl font-black text-white font-mono mb-2">{{ $overview['total_approved_transactions'] }} <span class="text-sm font-sans text-emerald-400">টি ভাউচার</span></h3>
+                <h3 class="text-3xl font-black text-white font-mono mb-2">
+                    <span data-counter="{{ $overview['total_approved_transactions'] }}">{{ $overview['total_approved_transactions'] }}</span> <span class="text-sm font-sans text-emerald-400">টি ভাউচার</span>
+                </h3>
                 <p class="text-xs text-slate-400 font-bangla">সকল সদস্য কর্তৃক পরিশোধিত কিস্তির মোট সংখ্যা</p>
             </div>
 
-            <div class="p-6 rounded-3xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-purple-500/30 hover:border-purple-500/60 transition-all hover:scale-105 shadow-xl group">
+            <div class="tilt-card p-6 rounded-3xl glass-card border border-purple-500/30 hover:border-purple-500/60 shadow-xl group">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-xs font-bold text-purple-400 uppercase tracking-wider font-bangla">সক্রিয় সদস্য সংখ্যা</span>
-                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg group-hover:rotate-12 transition-transform shadow-inner">
                         <i class="fa-solid fa-users"></i>
                     </div>
                 </div>
-                <h3 class="text-3xl font-black text-white font-mono mb-2">{{ $overview['total_members'] }} <span class="text-sm font-sans text-purple-400">জন</span></h3>
+                <h3 class="text-3xl font-black text-white font-mono mb-2">
+                    <span data-counter="{{ $overview['total_members'] }}">{{ $overview['total_members'] }}</span> <span class="text-sm font-sans text-purple-400">জন</span>
+                </h3>
                 <p class="text-xs text-slate-400 font-bangla">সজিব, রুবেল, সাইফুল, কাউসার, দৌলত, ফেরদৌস</p>
             </div>
 
@@ -722,40 +740,44 @@
 </section>
 
 
-<!-- Interactive Live Installment & Savings Calculator -->
-<section id="calculator" class="py-20 relative">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Interactive Live Installment & Savings Calculator with 3D Coin Visualizer -->
+<section id="calculator" class="py-20 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div class="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 border border-emerald-500/30 shadow-2xl">
+        <div class="p-8 sm:p-12 rounded-3xl glass-card border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
             <div class="text-center max-w-xl mx-auto mb-10 space-y-2">
-                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">Interactive Financial Tool</span>
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">Interactive Financial 3D Simulator</span>
                 <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-bangla">
-                    <span data-lang-bn>কিস্তি ও ভবিষ্যৎ সঞ্চয় প্রজেকশন সিমুলেটর</span>
-                    <span data-lang-en style="display:none;">Installment &amp; Savings Growth Simulator</span>
+                    <span class="text-gradient-emerald" data-lang-bn>কিস্তি ও ভবিষ্যৎ সঞ্চয় প্রজেকশন সিমুলেটর</span>
+                    <span class="text-gradient-emerald" data-lang-en style="display:none;">Installment &amp; Savings Growth Simulator</span>
                 </h3>
                 <p class="text-xs text-slate-400 font-bangla">
-                    <span data-lang-bn>মাসিক ১,০০০ টাকা কিস্তিতে আমাদের যৌথ তহবিলের ভবিষ্যৎ পরিমাণ দেখুন</span>
-                    <span data-lang-en style="display:none;">Simulate total accumulated fund over time</span>
+                    <span data-lang-bn>মাসিক ১,০০০ টাকা কিস্তিতে আমাদের যৌথ তহবিলের ভবিষ্যৎ বৃদ্ধির ৩ডি সিমুলেশন দেখুন</span>
+                    <span data-lang-en style="display:none;">Simulate total accumulated fund over time with real-time 3D coin stack</span>
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                <div class="md:col-span-6 space-y-6">
-                    <div>
-                        <div class="flex justify-between text-xs font-bold text-slate-300 mb-2 font-bangla">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Left: Slider & Parameters -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                        <div class="flex justify-between text-xs font-bold text-slate-300 font-bangla">
                             <span>কিস্তির মেয়াদ (মাস):</span>
-                            <span id="calc-months-display" class="text-brand-gold font-mono text-sm">12 মাস</span>
+                            <span id="calc-months-display" class="text-brand-gold font-mono text-base font-black">12 মাস</span>
                         </div>
-                        <input type="range" id="calc-months-slider" min="1" max="60" value="12" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
-                        <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+                        <input type="range" id="calc-months-slider" min="1" max="60" value="12" class="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
                             <span>১ মাস</span>
-                            <span>১২ মাস (১ বছর)</span>
-                            <span>৩৬ মাস (৩ বছর)</span>
-                            <span>৬০ মাস (৫ বছর)</span>
+                            <span>১২ মাস (১ব.)</span>
+                            <span>৩৬ মাস (৩ব.)</span>
+                            <span>৬০ মাস (৫ব.)</span>
                         </div>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2 text-xs text-slate-300 font-bangla">
+                    <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5 text-xs text-slate-300 font-bangla">
                         <div class="flex justify-between">
                             <span>মাসিক কিস্তি হার:</span>
                             <span class="font-bold text-white font-mono">{{ number_format($overview['monthly_installment']) }} BDT</span>
@@ -764,22 +786,36 @@
                             <span>মোট সক্রিয় সদস্য:</span>
                             <span class="font-bold text-white font-mono">{{ $overview['total_members'] }} জন</span>
                         </div>
-                        <div class="flex justify-between text-emerald-400 font-bold">
-                            <span>প্রতি মাসে মোট জমা:</span>
+                        <div class="flex justify-between text-emerald-400 font-bold pt-1 border-t border-white/10">
+                            <span>প্রতি মাসে যৌথ জমা:</span>
                             <span class="font-mono">{{ number_format($overview['monthly_installment'] * $overview['total_members']) }} BDT</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="md:col-span-6 space-y-4">
-                    <div class="p-6 rounded-2xl bg-slate-950/80 border border-brand-gold/40 text-center space-y-2 shadow-xl">
-                        <span class="text-xs text-slate-400 font-bangla block">একক সদস্যের মোট সঞ্চয়:</span>
+                <!-- Center: Three.js 3D Interactive Coin Tower -->
+                <div class="lg:col-span-4 flex flex-col items-center justify-center relative">
+                    <div class="w-full h-64 sm:h-72 relative flex items-center justify-center rounded-2xl overflow-hidden bg-slate-950/60 border border-white/10 shadow-inner">
+                        <div id="three-calc-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+                        <div class="absolute bottom-2 text-[10px] text-amber-300/90 font-mono tracking-wider bg-slate-950/80 px-3 py-1 rounded-full border border-amber-500/30 backdrop-blur-md pointer-events-none flex items-center gap-1.5 shadow-lg">
+                            <i class="fa-solid fa-coins text-amber-400"></i>
+                            <span>লাইভ ৩ডি ফান্ড স্ট্যাক গ্রোথ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Financial Outcome Cards -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="tilt-card p-6 rounded-2xl glass-card border border-brand-gold/40 text-center space-y-2 shadow-xl glow-gold">
+                        <span class="text-xs text-slate-400 font-bangla block">একক সদস্যের সঞ্চয় (ব্যক্তিগত):</span>
                         <h4 id="calc-single-total" class="text-3xl font-black text-amber-300 font-mono">12,000 BDT</h4>
+                        <span class="text-[10px] text-amber-300/70 font-bangla block">সঞ্চিত নিজস্ব মূলধন</span>
                     </div>
 
-                    <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/40 text-center space-y-2 shadow-xl">
-                        <span class="text-xs text-emerald-300 font-bangla block">৬ বন্ধুর যৌথ মোট সমবায় তহবিল:</span>
-                        <h4 id="calc-group-total" class="text-4xl font-black text-emerald-400 font-mono">72,000 BDT</h4>
+                    <div class="tilt-card p-6 rounded-2xl glass-card border border-emerald-500/40 text-center space-y-2 shadow-xl glow-emerald">
+                        <span class="text-xs text-emerald-300 font-bangla block">৬ বন্ধুর সম্মিলিত সমবায় তহবিল:</span>
+                        <h4 id="calc-group-total" class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">72,000 BDT</h4>
+                        <span class="text-[10px] text-emerald-300/70 font-bangla block">যৌথ বিনিয়োগযোগ্য মোট মূলধন</span>
                     </div>
                 </div>
             </div>
@@ -840,7 +876,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-    // 1. Calculator Logic
+    // 1. Calculator Logic & Synchronization with 3D Coin Stack
+    let updateCalculatorCoins = null;
+
     const slider = document.getElementById('calc-months-slider');
     const monthsDisplay = document.getElementById('calc-months-display');
     const singleTotal = document.getElementById('calc-single-total');
@@ -858,6 +896,10 @@
 
         singleTotal.innerText = single.toLocaleString() + ' BDT';
         groupTotal.innerText = group.toLocaleString() + ' BDT';
+
+        if (typeof updateCalculatorCoins === 'function') {
+            updateCalculatorCoins(months);
+        }
     }
 
     if (slider) {
@@ -865,130 +907,486 @@
         updateCalculator();
     }
 
-    // 2. Three.js 3D Animated USS Medallion using User's Logo
-    function initThreeDMedallion() {
+    // 2. High-Resolution Three.js 3D Interactive Hero Scene (Vault Medallion + 6 Brotherhood Nodes)
+    function initThreeDHeroScene() {
         const container = document.getElementById('three-container');
         if (!container) return;
 
-        const width = container.clientWidth || 360;
-        const height = container.clientHeight || 360;
+        const tooltip = document.getElementById('three-brother-tooltip');
+        const tooltipName = document.getElementById('three-tooltip-name');
+        const tooltipRole = document.getElementById('three-tooltip-role');
+        const tooltipIcon = document.getElementById('three-tooltip-icon');
+
+        const width = container.clientWidth || 380;
+        const height = container.clientHeight || 380;
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-        camera.position.z = 5.2;
+        camera.position.set(0, 0, 6.2);
 
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
         scene.add(ambientLight);
 
-        const pointLight1 = new THREE.PointLight(0xf59e0b, 2.2, 50);
-        pointLight1.position.set(5, 5, 5);
-        scene.add(pointLight1);
+        const goldLight = new THREE.PointLight(0xf59e0b, 2.8, 40);
+        goldLight.position.set(5, 5, 5);
+        scene.add(goldLight);
 
-        const pointLight2 = new THREE.PointLight(0x10b981, 1.8, 50);
-        pointLight2.position.set(-5, -5, 5);
-        scene.add(pointLight2);
+        const emeraldLight = new THREE.PointLight(0x10b981, 2.2, 40);
+        emeraldLight.position.set(-5, -4, 4);
+        scene.add(emeraldLight);
+
+        const blueLight = new THREE.PointLight(0x38bdf8, 1.2, 30);
+        blueLight.position.set(0, 5, -4);
+        scene.add(blueLight);
+
+        // Central Medallion Group
+        const medallionGroup = new THREE.Group();
+        scene.add(medallionGroup);
 
         const textureLoader = new THREE.TextureLoader();
         const logoTexture = textureLoader.load('/assets/images/user-logo.jpg');
 
         const rimMaterial = new THREE.MeshStandardMaterial({
-            color: 0xd97706,
-            metalness: 0.9,
-            roughness: 0.2,
+            color: 0xdfa028,
+            metalness: 0.94,
+            roughness: 0.22,
         });
 
         const faceMaterial = new THREE.MeshStandardMaterial({
             map: logoTexture,
             metalness: 0.2,
-            roughness: 0.4,
+            roughness: 0.35,
         });
 
-        const geometry = new THREE.CylinderGeometry(1.8, 1.8, 0.15, 64);
-        const materials = [rimMaterial, faceMaterial, faceMaterial];
-        const coin = new THREE.Mesh(geometry, materials);
+        // Embossed Coin Body
+        const coinGeo = new THREE.CylinderGeometry(1.7, 1.7, 0.2, 64);
+        const coinMaterials = [rimMaterial, faceMaterial, faceMaterial];
+        const coin = new THREE.Mesh(coinGeo, coinMaterials);
         coin.rotation.x = Math.PI / 2;
-        scene.add(coin);
+        medallionGroup.add(coin);
 
-        const particleCount = 70;
+        // Outer Beveled Golden Ring
+        const ringGeo = new THREE.TorusGeometry(1.88, 0.045, 16, 90);
+        const ringMat = new THREE.MeshStandardMaterial({
+            color: 0xfbbf24,
+            metalness: 0.95,
+            roughness: 0.15,
+        });
+        const outerRing = new THREE.Mesh(ringGeo, ringMat);
+        medallionGroup.add(outerRing);
+
+        // Outer Orbiting Concentric Halos
+        const haloGeo1 = new THREE.RingGeometry(2.1, 2.13, 64);
+        const haloMat1 = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+        const halo1 = new THREE.Mesh(haloGeo1, haloMat1);
+        medallionGroup.add(halo1);
+
+        // 6 Founding Brothers Data & Orbiting Spheres
+        const brothersData = [
+            { name_bn: 'সজিব মোল্লা', name_en: 'Sajib Mulla', role: 'সভাপতি (President)', icon: '👑', color: 0xf43f5e, orbitR: 2.65, angleOffset: 0 },
+            { name_bn: 'রুবেল মোল্লা', name_en: 'Rubel Mulla', role: 'সহ-সভাপতি (VP)', icon: '🎖️', color: 0x3b82f6, orbitR: 2.65, angleOffset: (Math.PI / 3) * 1 },
+            { name_bn: 'সাইফুল ইসলাম', name_en: 'Saiful Islam', role: 'ক্যাশিয়ার (Cashier)', icon: '💼', color: 0x10b981, orbitR: 2.65, angleOffset: (Math.PI / 3) * 2 },
+            { name_bn: 'কাউসার', name_en: 'Kawser', role: 'কার্যনির্বাহী সদস্য', icon: '👤', color: 0xf59e0b, orbitR: 2.65, angleOffset: (Math.PI / 3) * 3 },
+            { name_bn: 'দৌলত', name_en: 'Doulot', role: 'কার্যনির্বাহী সদস্য', icon: '👤', color: 0xa855f7, orbitR: 2.65, angleOffset: (Math.PI / 3) * 4 },
+            { name_bn: 'ফেরদৌস', name_en: 'Ferdous', role: 'কার্যনির্বাহী সদস্য', icon: '👤', color: 0x06b6d4, orbitR: 2.65, angleOffset: (Math.PI / 3) * 5 }
+        ];
+
+        const brotherNodes = [];
+        const constellationLines = [];
+        const sphereGeo = new THREE.SphereGeometry(0.2, 28, 28);
+
+        brothersData.forEach((b) => {
+            const mat = new THREE.MeshStandardMaterial({
+                color: b.color,
+                emissive: b.color,
+                emissiveIntensity: 0.75,
+                metalness: 0.5,
+                roughness: 0.2
+            });
+            const mesh = new THREE.Mesh(sphereGeo, mat);
+            mesh.userData = b;
+            scene.add(mesh);
+            brotherNodes.push(mesh);
+
+            // Constellation line connecting node to central medallion
+            const lineGeo = new THREE.BufferGeometry();
+            const linePositions = new Float32Array([0, 0, 0, 0, 0, 0]);
+            lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+            const lineMat = new THREE.LineBasicMaterial({
+                color: b.color,
+                transparent: true,
+                opacity: 0.45,
+                linewidth: 1
+            });
+            const line = new THREE.Line(lineGeo, lineMat);
+            scene.add(line);
+            constellationLines.push(line);
+        });
+
+        // 220 Stardust Nebula Depth Particles
+        const particleCount = 220;
         const particleGeo = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
+        const particlePositions = new Float32Array(particleCount * 3);
+        const particleColors = new Float32Array(particleCount * 3);
 
         for (let i = 0; i < particleCount * 3; i += 3) {
-            positions[i] = (Math.random() - 0.5) * 8;
-            positions[i+1] = (Math.random() - 0.5) * 8;
-            positions[i+2] = (Math.random() - 0.5) * 6;
+            particlePositions[i] = (Math.random() - 0.5) * 11;
+            particlePositions[i + 1] = (Math.random() - 0.5) * 11;
+            particlePositions[i + 2] = (Math.random() - 0.5) * 7;
+
+            const isGold = Math.random() > 0.4;
+            particleColors[i] = isGold ? 0.98 : 0.06;
+            particleColors[i + 1] = isGold ? 0.75 : 0.85;
+            particleColors[i + 2] = isGold ? 0.15 : 0.55;
         }
-        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
 
         const particleMat = new THREE.PointsMaterial({
-            color: 0xf59e0b,
             size: 0.05,
+            vertexColors: true,
             transparent: true,
-            opacity: 0.7,
+            opacity: 0.75
         });
         const particles = new THREE.Points(particleGeo, particleMat);
         scene.add(particles);
 
+        // Raycaster for Hovering Brother Nodes
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2(-999, -999);
+        let hoveredNode = null;
+
+        // Pointer Drag Controls with Inertia
         let isDragging = false;
-        let prevMouseX = 0;
-        let prevMouseY = 0;
-        let mouseX = 0;
-        let mouseY = 0;
+        let prevPointerX = 0;
+        let prevPointerY = 0;
+        let targetRotationX = 0;
+        let targetRotationY = 0;
 
-        container.addEventListener('mousedown', (e) => {
+        container.addEventListener('pointerdown', (e) => {
             isDragging = true;
-            prevMouseX = e.clientX;
-            prevMouseY = e.clientY;
+            prevPointerX = e.clientX;
+            prevPointerY = e.clientY;
+            container.setPointerCapture(e.pointerId);
         });
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        container.addEventListener('mousemove', (e) => {
+        container.addEventListener('pointermove', (e) => {
             const rect = container.getBoundingClientRect();
-            mouseX = ((e.clientX - rect.left) / width) * 2 - 1;
-            mouseY = -((e.clientY - rect.top) / height) * 2 + 1;
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
             if (isDragging) {
-                const deltaX = e.clientX - prevMouseX;
-                const deltaY = e.clientY - prevMouseY;
-                coin.rotation.z += deltaX * 0.01;
-                coin.rotation.x += deltaY * 0.01;
-                prevMouseX = e.clientX;
-                prevMouseY = e.clientY;
+                const deltaX = e.clientX - prevPointerX;
+                const deltaY = e.clientY - prevPointerY;
+                targetRotationY += deltaX * 0.008;
+                targetRotationX += deltaY * 0.008;
+                prevPointerX = e.clientX;
+                prevPointerY = e.clientY;
+            }
+
+            // Raycasting check
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(brotherNodes);
+            if (intersects.length > 0) {
+                const hit = intersects[0].object;
+                if (hoveredNode !== hit) {
+                    if (hoveredNode) hoveredNode.scale.set(1, 1, 1);
+                    hoveredNode = hit;
+                    hoveredNode.scale.set(1.4, 1.4, 1.4);
+                }
+                if (tooltip) {
+                    const b = hit.userData;
+                    tooltipIcon.innerText = b.icon;
+                    tooltipName.innerText = (currentLang === 'bn') ? b.name_bn : b.name_en;
+                    tooltipRole.innerText = b.role;
+                    tooltip.style.left = (e.clientX - rect.left) + 'px';
+                    tooltip.style.top = (e.clientY - rect.top - 15) + 'px';
+                    tooltip.style.opacity = '1';
+                }
+            } else {
+                if (hoveredNode) {
+                    hoveredNode.scale.set(1, 1, 1);
+                    hoveredNode = null;
+                }
+                if (tooltip) tooltip.style.opacity = '0';
             }
         });
 
-        let clock = new THREE.Clock();
+        const onPointerEnd = (e) => {
+            isDragging = false;
+            try { container.releasePointerCapture(e.pointerId); } catch(err) {}
+        };
+        container.addEventListener('pointerup', onPointerEnd);
+        container.addEventListener('pointercancel', onPointerEnd);
+        container.addEventListener('pointerleave', () => {
+            if (tooltip) tooltip.style.opacity = '0';
+        });
+
+        // Viewport IntersectionObserver to pause loop when offscreen
+        let isVisible = true;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isVisible = entry.isIntersecting;
+            });
+        }, { threshold: 0.1 });
+        observer.observe(container);
+
+        // Animation Loop
+        const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
+            if (!isVisible) return;
+
             const elapsedTime = clock.getElapsedTime();
 
             if (!isDragging) {
-                coin.rotation.z += 0.008;
-                coin.position.y = Math.sin(elapsedTime * 1.5) * 0.1;
-                coin.rotation.y = THREE.MathUtils.lerp(coin.rotation.y, mouseX * 0.4, 0.05);
+                targetRotationY += 0.005;
             }
+            medallionGroup.rotation.y = THREE.MathUtils.lerp(medallionGroup.rotation.y, targetRotationY, 0.08);
+            medallionGroup.rotation.x = THREE.MathUtils.lerp(medallionGroup.rotation.x, targetRotationX + Math.sin(elapsedTime * 1.5) * 0.08, 0.08);
+            medallionGroup.position.y = Math.sin(elapsedTime * 1.2) * 0.12;
 
-            particles.rotation.y = elapsedTime * 0.05;
+            outerRing.rotation.z = elapsedTime * 0.2;
+            halo1.rotation.z = -elapsedTime * 0.1;
+
+            // Position 6 Brotherhood Orbs in 3D Elliptical Orbit
+            brotherNodes.forEach((node, idx) => {
+                const b = node.userData;
+                const currentAngle = b.angleOffset + (elapsedTime * 0.45);
+                const x = Math.cos(currentAngle) * b.orbitR;
+                const z = Math.sin(currentAngle) * (b.orbitR * 0.85);
+                const y = Math.sin(currentAngle * 2) * 0.45;
+
+                node.position.set(x, y, z);
+
+                // Update dynamic constellation line
+                const line = constellationLines[idx];
+                const posAttr = line.geometry.attributes.position;
+                posAttr.setXYZ(0, medallionGroup.position.x, medallionGroup.position.y, medallionGroup.position.z);
+                posAttr.setXYZ(1, x, y, z);
+                posAttr.needsUpdate = true;
+            });
+
+            // Drift Stardust Particles
+            particles.rotation.y = elapsedTime * 0.03;
+            particles.rotation.x = elapsedTime * 0.015;
+
             renderer.render(scene, camera);
         }
-
         animate();
 
         window.addEventListener('resize', () => {
-            const newW = container.clientWidth || 360;
-            const newH = container.clientHeight || 360;
+            const newW = container.clientWidth || 380;
+            const newH = container.clientHeight || 380;
             camera.aspect = newW / newH;
             camera.updateProjectionMatrix();
             renderer.setSize(newW, newH);
         });
+    }
+
+    // 3. Three.js 3D Interactive Coin Tower / Capital Growth Visualizer
+    function initThreeDCalculatorScene() {
+        const container = document.getElementById('three-calc-container');
+        if (!container) return;
+
+        const width = container.clientWidth || 300;
+        const height = container.clientHeight || 260;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+        camera.position.set(0, 2.5, 6.2);
+        camera.lookAt(0, 0.8, 0);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Lights
+        const ambient = new THREE.AmbientLight(0xffffff, 1.25);
+        scene.add(ambient);
+
+        const goldPoint = new THREE.PointLight(0xf59e0b, 3.0, 30);
+        goldPoint.position.set(4, 5, 4);
+        scene.add(goldPoint);
+
+        const greenPoint = new THREE.PointLight(0x10b981, 2.0, 30);
+        greenPoint.position.set(-4, 3, 3);
+        scene.add(greenPoint);
+
+        // Base Podium
+        const baseGeo = new THREE.CylinderGeometry(1.6, 1.8, 0.25, 48);
+        const baseMat = new THREE.MeshStandardMaterial({
+            color: 0x0f172a,
+            metalness: 0.8,
+            roughness: 0.3
+        });
+        const basePodium = new THREE.Mesh(baseGeo, baseMat);
+        basePodium.position.y = -0.6;
+        scene.add(basePodium);
+
+        const baseRingGeo = new THREE.TorusGeometry(1.7, 0.04, 16, 64);
+        const baseRingMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+        const baseRing = new THREE.Mesh(baseRingGeo, baseRingMat);
+        baseRing.rotation.x = Math.PI / 2;
+        baseRing.position.y = -0.48;
+        scene.add(baseRing);
+
+        // Milestone Floating Glowing Holographic Rings (1 yr, 3 yrs, 5 yrs)
+        const ringMatAmber = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.45 });
+        const ringMatCyan = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.45 });
+        const ringMatEmerald = new THREE.MeshBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.55 });
+
+        const mRingGeo = new THREE.TorusGeometry(1.4, 0.025, 16, 64);
+        
+        const ring1Yr = new THREE.Mesh(mRingGeo, ringMatAmber);
+        ring1Yr.rotation.x = Math.PI / 2;
+        ring1Yr.position.y = 0.2;
+        scene.add(ring1Yr);
+
+        const ring3Yr = new THREE.Mesh(mRingGeo, ringMatCyan);
+        ring3Yr.rotation.x = Math.PI / 2;
+        ring3Yr.position.y = 1.3;
+        scene.add(ring3Yr);
+
+        const ring5Yr = new THREE.Mesh(mRingGeo, ringMatEmerald);
+        ring5Yr.rotation.x = Math.PI / 2;
+        ring5Yr.position.y = 2.4;
+        scene.add(ring5Yr);
+
+        // Coins Stack Group
+        const coinsGroup = new THREE.Group();
+        scene.add(coinsGroup);
+
+        const coinGeo = new THREE.CylinderGeometry(1.15, 1.15, 0.12, 40);
+        const coinMat = new THREE.MeshStandardMaterial({
+            color: 0xf59e0b,
+            metalness: 0.92,
+            roughness: 0.22,
+        });
+
+        const maxVisualCoins = 24;
+        const coins = [];
+        for (let i = 0; i < maxVisualCoins; i++) {
+            const c = new THREE.Mesh(coinGeo, coinMat);
+            c.position.y = -0.45 + (i * 0.13);
+            c.rotation.y = (i * 0.35);
+            c.visible = false;
+            coinsGroup.add(c);
+            coins.push(c);
+        }
+
+        // Dynamic Coins Update Function called by slider
+        updateCalculatorCoins = function(months) {
+            const activeCount = Math.max(1, Math.min(maxVisualCoins, Math.round((months / 60) * maxVisualCoins)));
+            coins.forEach((c, idx) => {
+                if (idx < activeCount) {
+                    c.visible = true;
+                } else {
+                    c.visible = false;
+                }
+            });
+
+            ring1Yr.material.opacity = (months >= 12) ? 0.9 : 0.25;
+            ring3Yr.material.opacity = (months >= 36) ? 0.9 : 0.25;
+            ring5Yr.material.opacity = (months >= 60) ? 1.0 : 0.25;
+        };
+
+        const initialMonths = slider ? parseInt(slider.value, 10) : 12;
+        updateCalculatorCoins(initialMonths);
+
+        // Mouse tilt on calculator canvas
+        let targetRotY = 0;
+        let targetRotX = 0;
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            const ny = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            targetRotY = nx * 0.6;
+            targetRotX = -ny * 0.2;
+        });
+
+        // Viewport Visibility Observer
+        let isCalcVisible = true;
+        const calcObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isCalcVisible = entry.isIntersecting;
+            });
+        }, { threshold: 0.1 });
+        calcObserver.observe(container);
+
+        const calcClock = new THREE.Clock();
+        function animateCalc() {
+            requestAnimationFrame(animateCalc);
+            if (!isCalcVisible) return;
+
+            const dt = calcClock.getElapsedTime();
+            coinsGroup.rotation.y = THREE.MathUtils.lerp(coinsGroup.rotation.y, targetRotY + dt * 0.35, 0.05);
+            coinsGroup.rotation.x = THREE.MathUtils.lerp(coinsGroup.rotation.x, targetRotX, 0.05);
+
+            baseRing.rotation.z = dt * 0.5;
+            ring1Yr.rotation.z = -dt * 0.4;
+            ring3Yr.rotation.z = dt * 0.4;
+            ring5Yr.rotation.z = -dt * 0.5;
+
+            renderer.render(scene, camera);
+        }
+        animateCalc();
+
+        window.addEventListener('resize', () => {
+            const newW = container.clientWidth || 300;
+            const newH = container.clientHeight || 260;
+            camera.aspect = newW / newH;
+            camera.updateProjectionMatrix();
+            renderer.setSize(newW, newH);
+        });
+    }
+
+    // 4. CounterUp Animated Number Counters on Viewport Scroll
+    function initCounterUp() {
+        const counterElements = document.querySelectorAll('[data-counter]');
+        if (!counterElements.length) return;
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-counter'), 10);
+                    if (!isNaN(target)) {
+                        animateNumber(el, target);
+                    }
+                    obs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        counterElements.forEach(el => observer.observe(el));
+
+        function animateNumber(el, target) {
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(target * easeOut);
+                el.innerText = current.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    el.innerText = target.toLocaleString();
+                }
+            }
+            requestAnimationFrame(update);
+        }
     }
 
     // Announcement & Due Modal Chaining Controller with 24h Cookie Expiration
@@ -1003,7 +1401,6 @@
             currentModal.classList.remove('flex');
         }
 
-        // Find the next non-dismissed announcement
         let nextIdx = currentIdx + 1;
         let foundNext = false;
 
@@ -1021,7 +1418,6 @@
         }
 
         if (!foundNext) {
-            // If all announcements are closed/dismissed, show the Due Warning Modal if active and not dismissed
             showDueWarningModalIfNotDismissed();
         }
     }
@@ -1056,18 +1452,19 @@
                 m.classList.remove('hidden');
                 m.classList.add('flex');
                 openedAnnouncement = true;
-                break; // Only open the highest-priority non-dismissed announcement
+                break;
             }
         }
 
-        // If no un-dismissed announcement was found, check Due Alert modal
         if (!openedAnnouncement) {
             showDueWarningModalIfNotDismissed();
         }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        initThreeDMedallion();
+        initThreeDHeroScene();
+        initThreeDCalculatorScene();
+        initCounterUp();
         initModalPriorityChain();
     });
 </script>
