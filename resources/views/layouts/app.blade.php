@@ -878,6 +878,21 @@
             initScrollSpy();
             initCard3DTilt();
 
+            // Auto-close flash toast popups after 10 seconds with smooth slide-left vanishing animation
+            ['flash-toast', 'flash-toast-info', 'flash-toast-error'].forEach(id => {
+                const toast = document.getElementById(id);
+                if (toast) {
+                    setTimeout(() => {
+                        toast.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                        toast.style.transform = 'translateX(-120%)';
+                        toast.style.opacity = '0';
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 500);
+                    }, 10000);
+                }
+            });
+
             // Auto-open Login Modal if ?login=1, ?open_login=1, #login, or unauthenticated redirect
             const urlParams = new URLSearchParams(window.location.search);
             const shouldOpenLogin = urlParams.get('login') === '1' || urlParams.get('open_login') === '1' || window.location.hash === '#login' || @json($errors->has('email') || $errors->has('password') || session('open_login') || session('error'));

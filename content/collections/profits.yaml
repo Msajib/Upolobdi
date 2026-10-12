@@ -1,0 +1,9 @@
+title: 'Profits (বিনিয়োগ ও লভ্যাংশের হিসাব)'
+template: default
+layout: layout
+revisions: false
+route: '/profits/{slug}'
+sort_dir: desc
+sort_by: date
+sites:
+  - default

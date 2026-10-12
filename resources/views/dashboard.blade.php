@@ -52,24 +52,39 @@
 
             <!-- Secondary Actions Grid -->
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
-                <!-- Download / Print Official Ledger (Cashier, President, Admin) -->
+                <!-- Committee Actions (President, VP, Cashier) -->
                 @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+                    <!-- Printable Due Months Report -->
+                    <a href="{{ route('ledger.due_report') }}" target="_blank" class="px-3 sm:px-4 py-2.5 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all text-center">
+                        <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
+                        <span>বকেয়া রিপোর্ট</span>
+                    </a>
+
+                    <!-- Add Expense Voucher -->
+                    <button onclick="openExpenseModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-red-700/90 hover:bg-red-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all cursor-pointer text-center">
+                        <i class="fa-solid fa-receipt text-sm"></i>
+                        <span>খরচ ভাউচার</span>
+                    </button>
+
+                    <!-- Add Profit Entry (Investment Return) -->
+                    <button onclick="openProfitModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-700/90 hover:bg-emerald-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all cursor-pointer text-center">
+                        <i class="fa-solid fa-chart-line text-sm"></i>
+                        <span>মুনাফা যোগ</span>
+                    </button>
+
+                    <!-- Download / Print Official Ledger -->
                     <a href="{{ route('ledger.export') }}" target="_blank" class="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all text-center">
                         <i class="fa-solid fa-file-pdf text-sm"></i>
                         <span>লেজার প্রিন্ট</span>
                     </a>
-                @endif
 
-                <!-- Direct Cash Entry button for Cashier & President -->
-                @if($userRole === 'superadmin' || $userRole === 'cashier')
+                    <!-- Direct Cash Entry button for Committee -->
                     <button onclick="openDirectPaymentModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-purple-600/90 hover:bg-purple-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all cursor-pointer text-center">
                         <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
                         <span>নগদ কিস্তি</span>
                     </button>
-                @endif
 
-                <!-- Royal Announcements Button for President, Cashier & VP -->
-                @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+                    <!-- Royal Announcements Button -->
                     <button onclick="openAddAnnouncementModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-600 hover:to-amber-700 border border-amber-400/40 text-amber-100 font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all cursor-pointer text-center">
                         <i class="fa-solid fa-scroll text-sm"></i>
                         <span>নতুন নোটিশ</span>
@@ -155,8 +170,8 @@
     </div>
     @endif
 
-    <!-- 3. Financial Stats Summary Cards (Visible in Full to Logged-in Members) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- 3. Financial Stat Cards (6 Cards including Investment Profit, Expenses and Net Surplus) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div class="p-5 rounded-3xl bg-slate-900 border border-white/10 space-y-2">
             <span class="text-xs text-slate-400 font-bangla block">আমার পরিশোধিত মোট কিস্তি</span>
             <h4 class="text-2xl font-black text-emerald-400 font-mono">{{ number_format($userDue['total_paid_amount'] ?? 0) }} BDT</h4>
@@ -172,15 +187,27 @@
         </div>
 
         <div class="p-5 rounded-3xl bg-slate-900 border border-white/10 space-y-2">
-            <span class="text-xs text-slate-400 font-bangla block">সমিতির সর্বমোট সংরক্ষিত ফান্ড</span>
-            <h4 class="text-2xl font-black text-amber-400 font-mono">{{ number_format($overview['total_approved_fund']) }} BDT</h4>
-            <span class="text-[11px] text-slate-500 font-bangla">{{ $overview['total_approved_transactions'] }} টি সফল ট্রানজেকশন</span>
+            <span class="text-xs text-slate-400 font-bangla block">মোট সংগৃহীত কিস্তি (জমা)</span>
+            <h4 class="text-2xl font-black text-sky-400 font-mono">{{ number_format($overview['total_approved_fund']) }} BDT</h4>
+            <span class="text-[11px] text-slate-500 font-bangla">{{ $overview['total_approved_transactions'] }} টি সফল কিস্তি জমা</span>
         </div>
 
         <div class="p-5 rounded-3xl bg-slate-900 border border-white/10 space-y-2">
-            <span class="text-xs text-slate-400 font-bangla block">নির্ধারিত মাসিক কিস্তি হার</span>
-            <h4 class="text-2xl font-black text-white font-mono">{{ number_format($settings['monthly_installment'] ?? 1000) }} BDT</h4>
-            <span class="text-[11px] text-slate-500 font-bangla">সদস্য সংখ্যা: {{ $overview['total_members'] }} জন</span>
+            <span class="text-xs text-emerald-300 font-bangla block">বিনিয়োগ মুনাফা (লাভ)</span>
+            <h4 class="text-2xl font-black text-emerald-400 font-mono">+{{ number_format($overview['total_profit'] ?? 0) }} BDT</h4>
+            <span class="text-[11px] text-slate-500 font-bangla">{{ count($profits ?? []) }} টি লভ্যাংশ এন্ট্রি</span>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-slate-900 border border-white/10 space-y-2">
+            <span class="text-xs text-rose-300 font-bangla block">সমিতির মোট ব্যয় (খরচ)</span>
+            <h4 class="text-2xl font-black text-rose-400 font-mono">-{{ number_format($overview['total_expenses'] ?? 0) }} BDT</h4>
+            <span class="text-[11px] text-slate-500 font-bangla">{{ count($expenses ?? []) }} টি ভাউচার এন্ট্রি</span>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-amber-950/20 to-slate-900 border-2 border-brand-gold/40 shadow-xl space-y-2">
+            <span class="text-xs text-brand-gold font-bold font-bangla block">বর্তমান নীট তহবিল (উদ্বৃত্ত)</span>
+            <h4 class="text-2xl font-black text-amber-300 font-mono">{{ number_format($overview['net_balance'] ?? $overview['total_approved_fund']) }} BDT</h4>
+            <span class="text-[11px] text-slate-400 font-bangla">তহবিল: কিস্তি + মুনাফা - খরচ</span>
         </div>
     </div>
 
@@ -442,8 +469,13 @@
                                     <i class="fa-solid fa-gift mr-1"></i> {{ $md['exemption_months'] > 0 ? $md['exemption_months'].' মাস অবকাশ' : 'অবকাশ দিন' }}
                                 </button>
                             </td>
-                            <td class="py-3 text-right">
-                                <button type="button" onclick="openEditMemberModal('{{ $md['email'] }}', '{{ $md['name'] }}', '{{ $md['bangla_name'] }}', '{{ $md['role'] }}')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">
+                            <td class="py-3 text-right flex items-center justify-end gap-1.5">
+                                @if($userRole === 'superadmin')
+                                <button type="button" onclick="openResetPasswordModal('{{ $md['email'] }}', '{{ $md['bangla_name'] }}')" class="p-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold transition cursor-pointer" title="পাসওয়ার্ড রিসেট করুন (নতুন পাসওয়ার্ড নির্ধারণ)">
+                                    <i class="fa-solid fa-key"></i>
+                                </button>
+                                @endif
+                                <button type="button" onclick="openEditMemberModal('{{ $md['email'] }}', '{{ $md['name'] }}', '{{ $md['bangla_name'] }}', '{{ $md['role'] }}')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="সদস্য তথ্য">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
                             </td>
@@ -631,6 +663,22 @@
                             <span class="text-[11px] text-amber-300 font-mono"><i class="fa-regular fa-calendar mr-1"></i>{{ $ann['announcement_date'] }}</span>
                         </div>
                         <h4 class="text-sm font-bold text-white font-bangla">{{ $ann['title_bn'] }}</h4>
+
+                        @if(!empty($ann['is_special_fund']) && !empty($ann['special_fund_amount']))
+                        <div class="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[11px] text-amber-200 font-bangla space-y-1">
+                            <span class="font-bold text-amber-300 block">
+                                <i class="fa-solid fa-bullhorn text-amber-400 mr-1"></i>বিশেষ তহবিল সংগ্রহ
+                                @if(!empty($ann['effective_month']))
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/30 text-white font-mono ml-1">{{ $ann['effective_month'] }}</span>
+                                @endif
+                            </span>
+                            <div class="leading-relaxed">
+                                নিয়মিত কিস্তি: {{ number_format($settings['monthly_installment'] ?? 1000) }} + বিশেষ: {{ number_format($ann['special_fund_amount']) }} = 
+                                <span class="font-bold text-white bg-amber-500/40 px-1 py-0.5 rounded font-mono">সর্বমোট {{ number_format(($settings['monthly_installment'] ?? 1000) + $ann['special_fund_amount']) }} BDT</span>
+                            </div>
+                        </div>
+                        @endif
+
                         <p class="text-xs text-slate-300 line-clamp-3 font-bangla leading-relaxed">{{ $ann['body_bn'] }}</p>
                     </div>
 
@@ -679,7 +727,213 @@
     </div>
     @endif
 
-    <!-- 5. Payment Transaction Ledger Table (Personal or Global) with Entry Source -->
+    <!-- 4.5. Expenses & Vouchers Ledger Section -->
+    <div class="p-6 rounded-3xl bg-slate-900 border border-white/10 shadow-2xl space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+                <h3 class="text-lg font-black text-white font-bangla flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-rose-400"></i>
+                    <span>সমিতির খরচ ও ব্যয় ভাউচার খতিয়ান (Expenses Ledger)</span>
+                </h3>
+                <p class="text-xs text-slate-400 font-bangla">অনুমোদিত প্রশাসনিক ও সমবায় পরিচালনা খাতের খরচসমূহ (মোট তহবিল থেকে কর্তনকৃত)</p>
+            </div>
+
+            @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+            <button onclick="openExpenseModal()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg transition hover:scale-105 cursor-pointer">
+                <i class="fa-solid fa-plus"></i>
+                <span>নতুন খরচ ভাউচার যোগ</span>
+            </button>
+            @endif
+        </div>
+
+        @if(empty($expenses) || count($expenses) === 0)
+            <div class="py-8 text-center text-slate-500 text-xs font-bangla">
+                <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-600"></i>
+                <p>বর্তমানে কোনো খরচ ভাউচার রেকর্ড করা হয়নি।</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 font-bangla">
+                            <th class="pb-3">ভাউচার নং</th>
+                            <th class="pb-3">খরচের খাত ও বিবরণ</th>
+                            <th class="pb-3">ক্যাটাগরি</th>
+                            <th class="pb-3">পরিমাণ (BDT)</th>
+                            <th class="pb-3">তারিখ</th>
+                            <th class="pb-3">রেকর্ডকারী</th>
+                            <th class="pb-3 text-right">রসিদ ও অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 font-bangla">
+                        @foreach($expenses as $exp)
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-3.5 font-mono text-slate-400 font-bold text-[11px]">
+                                {{ $exp['voucher_number'] }}
+                            </td>
+                            <td class="py-3.5">
+                                <span class="font-bold text-white block">{{ $exp['title'] }}</span>
+                                @if(!empty($exp['description']))
+                                    <span class="text-[11px] text-slate-400 block line-clamp-1 mt-0.5">{{ $exp['description'] }}</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-rose-300 border border-rose-500/20">
+                                    {{ $exp['category'] }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 font-bold text-rose-400 font-mono text-sm">
+                                -{{ number_format($exp['amount']) }} BDT
+                            </td>
+                            <td class="py-3.5 font-mono text-slate-400 text-xs">
+                                {{ $exp['expense_date'] }}
+                            </td>
+                            <td class="py-3.5 text-slate-300 text-[11px]">
+                                {{ $exp['recorded_by'] }}
+                            </td>
+                            <td class="py-3.5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    @if(!empty($exp['voucher_image']))
+                                        <button type="button" onclick="viewProofModal('{{ $exp['voucher_image'] }}', '{{ $exp['title'] }}', '{{ $exp['voucher_number'] }}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs shadow transition cursor-pointer" title="ভাউচার প্রমাণ দেখুন">
+                                            <i class="fa-solid fa-image"></i>
+                                        </button>
+                                    @endif
+
+                                    @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+                                        <form action="{{ route('expense.delete', $exp['id']) }}" method="POST" onsubmit="return confirm('এই খরচ ভাউচারটি মুছে ফেলতে চান? কর্তনকৃত টাকা তহবিলে ফেরত সমন্বয় হবে।')">
+                                            @csrf
+                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs transition cursor-pointer" title="খরচ মুছুন">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t border-white/10 font-bold bg-slate-800/40">
+                            <td colspan="3" class="p-3 text-right text-slate-400">মোট খরচ:</td>
+                            <td class="p-3 font-mono text-rose-400 text-sm">-{{ number_format($overview['total_expenses'] ?? 0) }} BDT</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        @endif
+    </div>
+
+    <!-- 4.6. Investment & Profits Ledger Section -->
+    <div class="p-6 rounded-3xl bg-slate-900 border border-white/10 shadow-2xl space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+                <h3 class="text-lg font-black text-white font-bangla flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                    <span>বিনিয়োগ ও লভ্যাংশ খতিয়ান (Investment & Profits Ledger)</span>
+                </h3>
+                <p class="text-xs text-slate-400 font-bangla">জমি, ব্যবসা, সম্পদ বা এগ্রো প্রকল্পে বিনিয়োগ হতে অর্জিত মাসিক বা এককালীন লভ্যাংশ (মূল তহবিলে সংযুক্ত)</p>
+            </div>
+
+            @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+            <button onclick="openProfitModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg transition hover:scale-105 cursor-pointer">
+                <i class="fa-solid fa-plus"></i>
+                <span>নতুন লভ্যাংশ যোগ</span>
+            </button>
+            @endif
+        </div>
+
+        @if(empty($profits) || count($profits) === 0)
+            <div class="py-8 text-center text-slate-500 text-xs font-bangla">
+                <i class="fa-solid fa-chart-line text-3xl mb-2 text-slate-600"></i>
+                <p>বর্তমানে কোনো বিনিয়োগ মুনাফা রেকর্ড করা হয়নি।</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 font-bangla">
+                            <th class="pb-3">রেফারেন্স নং</th>
+                            <th class="pb-3">বিনিয়োগ প্রকল্প ও বিবরণ</th>
+                            <th class="pb-3">খাত / উৎস</th>
+                            <th class="pb-3">মুনাফার ধরন</th>
+                            <th class="pb-3">পরিমাণ (BDT)</th>
+                            <th class="pb-3">তারিখ</th>
+                            <th class="pb-3">রেকর্ডকারী</th>
+                            <th class="pb-3 text-right">ডকুমেন্ট ও অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 font-bangla">
+                        @foreach($profits as $prof)
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-3.5 font-mono text-slate-400 font-bold text-[11px]">
+                                {{ $prof['reference_number'] }}
+                            </td>
+                            <td class="py-3.5">
+                                <span class="font-bold text-white block">{{ $prof['title'] }}</span>
+                                @if(!empty($prof['description']))
+                                    <span class="text-[11px] text-slate-400 block line-clamp-1 mt-0.5">{{ $prof['description'] }}</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-sky-300 border border-sky-500/20">
+                                    {{ $prof['source_category_label'] }}
+                                </span>
+                            </td>
+                            <td class="py-3.5">
+                                @if($prof['profit_type'] === 'monthly')
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
+                                        <i class="fa-solid fa-arrows-rotate text-[9px] mr-0.5"></i> {{ $prof['profit_type_label'] }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-500/30">
+                                        <i class="fa-solid fa-bolt text-[9px] mr-0.5"></i> {{ $prof['profit_type_label'] }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 font-bold text-emerald-400 font-mono text-sm">
+                                +{{ number_format($prof['amount']) }} BDT
+                            </td>
+                            <td class="py-3.5 font-mono text-slate-400 text-xs">
+                                {{ $prof['profit_date'] }}
+                            </td>
+                            <td class="py-3.5 text-slate-300 text-[11px]">
+                                {{ $prof['recorded_by'] }}
+                            </td>
+                            <td class="py-3.5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    @if(!empty($prof['document_image']))
+                                        <button type="button" onclick="viewProofModal('{{ $prof['document_image'] }}', '{{ $prof['title'] }}', '{{ $prof['reference_number'] }}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs shadow transition cursor-pointer" title="ডকুমেন্ট বা প্রমাণ দেখুন">
+                                            <i class="fa-solid fa-file-image"></i>
+                                        </button>
+                                    @endif
+
+                                    @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+                                        <form action="{{ route('profit.delete', $prof['id']) }}" method="POST" onsubmit="return confirm('এই লভ্যাংশ এন্ট্রিটি মুছে ফেলতে চান? তহবিলের ব্যালেন্স পুনরায় সমন্বয় করা হবে।')">
+                                            @csrf
+                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs transition cursor-pointer" title="মুনাফা মুছুন">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t border-white/10 font-bold bg-slate-800/40">
+                            <td colspan="4" class="p-3 text-right text-slate-400">মোট বিনিয়োগ মুনাফা:</td>
+                            <td class="p-3 font-mono text-emerald-400 text-sm">+{{ number_format($overview['total_profit'] ?? 0) }} BDT</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        @endif
+    </div>
+
+    <!-- 5. Payment Transaction Ledger Table (Personal or Global) with Entry Source & Pagination -->
     <div class="p-6 rounded-3xl bg-slate-900 border border-white/10 shadow-2xl space-y-5">
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
@@ -694,24 +948,35 @@
                 <p class="text-xs text-slate-400 font-bangla">সকল অনুমোদিত, অপেক্ষমাণ ও বাতিলকৃত কিস্তির বিস্তারিত তালিকা</p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
+                    <!-- Printable Due Report -->
+                    <a href="{{ route('ledger.due_report') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>বকেয়া অডিট</span>
+                    </a>
+
+                    <!-- Print Ledger -->
                     <a href="{{ route('ledger.export') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 shadow">
                         <i class="fa-solid fa-print"></i>
-                        <span>রিপোর্ট প্রিন্ট</span>
+                        <span>লেজার প্রিন্ট</span>
                     </a>
+
+                    <!-- New Kisti Button for Committee to add payment for anyone -->
+                    <button onclick="openDirectPaymentModal()" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg transition hover:scale-105 cursor-pointer">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>নতুন কিস্তি যোগ</span>
+                    </button>
                 @endif
 
+                @if($userRole !== 'superadmin' && $userRole !== 'admin' && $userRole !== 'cashier')
                 <button onclick="openPaymentModal()" class="px-4 py-2 rounded-xl bg-brand-gold hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg">
                     <i class="fa-solid fa-plus"></i>
-                    <span>নতুন কিস্তি জমা</span>
+                    <span>আমার কিস্তি জমা</span>
                 </button>
+                @endif
             </div>
         </div>
-
-        @php
-            $displayPayments = ($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier') ? $allPayments : $userPayments;
-        @endphp
 
         @if(count($displayPayments) === 0)
             <div class="py-12 text-center text-slate-500 text-xs font-bangla">
@@ -819,6 +1084,48 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Ledger Pagination Controls -->
+            @if(isset($totalLedgerPages) && $totalLedgerPages > 1)
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs font-bangla">
+                <div class="text-slate-400">
+                    মোট <span class="font-mono font-bold text-white">{{ $totalLedgerRecords }}</span> টি রেকর্ডের মধ্যে পৃষ্ঠা <span class="font-mono font-bold text-amber-400">{{ $currentLedgerPage }}</span> / <span class="font-mono text-slate-300">{{ $totalLedgerPages }}</span> দেখানো হচ্ছে
+                </div>
+                <div class="flex items-center gap-1.5 font-mono">
+                    @if($currentLedgerPage > 1)
+                        <a href="?page={{ $currentLedgerPage - 1 }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> পূর্ববর্তী
+                        </a>
+                    @else
+                        <span class="px-3 py-1.5 rounded-xl bg-slate-800/40 text-slate-600 border border-white/5 cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> পূর্ববর্তী
+                        </span>
+                    @endif
+
+                    @for($p = max(1, $currentLedgerPage - 2); $p <= min($totalLedgerPages, $currentLedgerPage + 2); $p++)
+                        @if($p == $currentLedgerPage)
+                            <span class="w-8 h-8 rounded-xl bg-brand-gold text-slate-950 font-black flex items-center justify-center shadow-lg">
+                                {{ $p }}
+                            </span>
+                        @else
+                            <a href="?page={{ $p }}" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 flex items-center justify-center transition">
+                                {{ $p }}
+                            </a>
+                        @endif
+                    @endfor
+
+                    @if($currentLedgerPage < $totalLedgerPages)
+                        <a href="?page={{ $currentLedgerPage + 1 }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
+                            পরবর্তী <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </a>
+                    @else
+                        <span class="px-3 py-1.5 rounded-xl bg-slate-800/40 text-slate-600 border border-white/5 cursor-not-allowed">
+                            পরবর্তী <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </span>
+                    @endif
+                </div>
+            </div>
+            @endif
         @endif
     </div>
 
@@ -1051,7 +1358,9 @@
                 <label class="block font-bold text-slate-300 mb-1">কোন সদস্যের কিস্তি *</label>
                 <select name="member_email" required class="w-full px-3 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
                     @foreach($allMembers as $mem)
-                    <option value="{{ $mem['email'] }}">{{ $mem['bangla_name'] }} ({{ $mem['role_label_bn'] }})</option>
+                    <option value="{{ $mem['email'] }}" {{ $mem['email'] === $currentUser->email() ? 'selected' : '' }}>
+                        {{ $mem['bangla_name'] }} ({{ $mem['role_label_bn'] }}) - {{ $mem['email'] }}
+                    </option>
                     @endforeach
                 </select>
             </div>
@@ -1618,6 +1927,31 @@
                 <textarea name="body_en" rows="5" placeholder="Optional English proclamation text..." class="w-full min-h-[120px] px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans leading-relaxed"></textarea>
             </div>
 
+            <!-- Special Fund Collection Option -->
+            <div class="p-3 rounded-2xl bg-slate-800/80 border border-amber-500/30 space-y-2.5">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_special_fund" value="1" id="is_special_fund_check" onchange="toggleSpecialFundFields(this.checked)" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-900 border-white/20">
+                    <span class="font-bold text-amber-300">এটি কি বিশেষ তহবিল সংগ্রহ ঘোষণা? (Special Fund Collection)</span>
+                </label>
+
+                <div id="special_fund_fields" class="hidden space-y-2 pt-2 border-t border-white/10">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">অতিরিক্ত টাকার পরিমাণ (BDT) *</label>
+                            <input type="number" name="special_fund_amount" value="3000" min="0" placeholder="e.g. 3000" class="w-full px-3 py-2 bg-slate-900 border border-white/15 rounded-xl text-white font-mono font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">প্রযোজ্য মাস / সময়সীমা</label>
+                            <input type="text" name="effective_month" placeholder="e.g. নভেম্বর ২০২৬" class="w-full px-3 py-2 bg-slate-900 border border-white/15 rounded-xl text-white">
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-amber-200/80 leading-relaxed">
+                        <i class="fa-solid fa-calculator mr-1"></i>
+                        সদস্যদের নিয়মিত মাসিক কিস্তির সাথে এই অতিরিক্ত টাকা যুক্ত করে সর্বমোট পরিশোধের পরিমাণ প্রদর্শিত হবে।
+                    </p>
+                </div>
+            </div>
+
             <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200">
                 <i class="fa-solid fa-crown mr-1 text-amber-400"></i>
                 আপনার ভূমিকা ({{ $userRole === 'superadmin' ? 'সভাপতি' : ($userRole === 'cashier' ? 'ক্যাশিয়ার' : 'সহ-সভাপতি') }}) অনুসারে ফরমানটি যথাক্রমে অগ্রাধিকার ক্রমানুসারে ওয়েবসাইটে প্রদর্শিত হবে।
@@ -1822,6 +2156,186 @@
     </div>
 </div>
 
+<!-- Expense Voucher Modal (Secretary, Vice-Secretary, Cashier) -->
+<div id="expenseModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-rose-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('expenseModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-5">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-rose-400"></i>
+                <span>নতুন খরচ ও ব্যয় ভাউচার এন্ট্রি (Add Expense)</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-bangla mt-1">
+                অনুমোদিত খরচের ভাউচার রেকর্ড করুন। এই খরচ স্বয়ংক্রিয়ভাবে সমিতির মূল ব্যালেন্স থেকে কর্তন হবে।
+            </p>
+        </div>
+
+        <form action="{{ route('expense.create') }}" method="POST" enctype="multipart/form-data" onsubmit="showPreloader('খরচ ভাউচার রেকর্ড হচ্ছে...', 'উপলব্ধি সমবায় সমিতি')" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+            
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">খরচের খাত ও শিরোনাম *</label>
+                <input type="text" name="title" required placeholder="যেমন: অফিস খাতা ও প্রিন্টিং স্টেশনারি ক্রয়" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">টাকার পরিমাণ (BDT) *</label>
+                    <input type="number" name="amount" min="1" step="any" required placeholder="যেমন: 1500" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-rose-400">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">খরচের তারিখ *</label>
+                    <input type="date" name="expense_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">খরচের ক্যাটাগরি / বিভাগ *</label>
+                <select name="category" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
+                    <option value="অফিস ও প্রশাসনিক">অফিস ও প্রশাসনিক (Office & Administration)</option>
+                    <option value="আইনি ও সরকারি ফি">আইনি ও সরকারি ফি (Legal & Government Fees)</option>
+                    <option value="মিটিং ও আপ্যায়ন">মিটিং ও আপ্যায়ন (Meetings & Refreshments)</option>
+                    <option value="প্রকল্প সমীক্ষা ও ব্যয়">প্রকল্প সমীক্ষা ও উন্নয়ন (Project Development)</option>
+                    <option value="আইটি ও ডোমেন/হোস্টিং">আইটি ও ডোমেন/হোস্টিং (IT & Infrastructure)</option>
+                    <option value="অন্যান্য বিবিধ ব্যয়">অন্যান্য বিবিধ ব্যয় (Miscellaneous)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">খরচের বিস্তারিত বিবরণ (ঐচ্ছিক)</label>
+                <textarea name="description" rows="3" placeholder="খরচের প্রয়োজনীয় বিবরণ..." class="w-full px-3.5 py-2 bg-slate-800 border border-white/15 rounded-xl text-white leading-relaxed"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">ক্যাশ মেমো / ভাউচার স্লিপের ছবি (ঐচ্ছিক / Proof)</label>
+                <input type="file" name="voucher_image" accept="image/*,.pdf" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-500 cursor-pointer">
+                <span class="text-[10px] text-slate-500 block mt-1">মেমো বা ভাউচারের ছবি সংযুক্ত করতে পারেন (ছবি না থাকলেও ভাউচার সংরক্ষণ হবে)</span>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs shadow-xl transition-all cursor-pointer mt-2">
+                <i class="fa-solid fa-receipt mr-1"></i> খরচ ভাউচার সেভ করুন ও তহবিল কর্তন করুন
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Investment Profit Modal (Secretary, Vice-Secretary, Cashier) -->
+<div id="profitModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('profitModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-5">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                <span>বিনিয়োগের লভ্যাংশ যোগ (Add Investment Profit)</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-bangla mt-1">
+                জমি, ব্যবসা বা অন্যান্য বিনিয়োগ থেকে অর্জিত লভ্যাংশ রেকর্ড করুন। এই টাকা সমিতির মূল তহবিলে স্বয়ংক্রিয়ভাবে যোগ হবে।
+            </p>
+        </div>
+
+        <form action="{{ route('profit.create') }}" method="POST" enctype="multipart/form-data" onsubmit="showPreloader('মুনাফা রেকর্ড হচ্ছে...', 'উপলব্ধি সমবায় সমিতি')" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+            
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">বিনিয়োগ খাত / লভ্যাংশের বিবরণ *</label>
+                <input type="text" name="title" required placeholder="যেমন: ধানমন্ডি প্লট বিক্রয়ের মুনাফা অথবা গ্রোসারি ব্যবসার মার্চ মাসের লাভ" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">বিনিয়োগের ক্ষেত্র / খাত *</label>
+                    <select name="source_category" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
+                        <option value="business">ব্যবসা ও বাণিজ্য (Business)</option>
+                        <option value="land">জমি ক্রয়-বিক্রয় (Land/Plot)</option>
+                        <option value="property">ফ্ল্যাট ও রিয়েল এস্টেট (Property)</option>
+                        <option value="agro">এগ্রো ও ডেইরি ফার্ম (Agro/Dairy)</option>
+                        <option value="other">অন্যান্য বিনিয়োগ (Other Investment)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">মুনাফার ধরন (Profit Type) *</label>
+                    <select name="profit_type" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold">
+                        <option value="monthly">মাসিক লভ্যাংশ (অনির্দিষ্ট/পরিবর্তনশীল)</option>
+                        <option value="one_time">এককালীন লভ্যাংশ (বিক্রয়/ল্যাম্পসাম)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">লাভের পরিমাণ (BDT) *</label>
+                    <input type="number" name="amount" min="1" step="any" required placeholder="যেমন: 25000" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono font-bold focus:border-emerald-400">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">মুনাফা প্রাপ্তির তারিখ *</label>
+                    <input type="date" name="profit_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">রেফারেন্স / চুক্তি নম্বর (ঐচ্ছিক)</label>
+                <input type="text" name="reference_number" placeholder="যেমন: DEED-2026/INV-01" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">বিস্তারিত নোট বা মন্তব্য (ঐচ্ছিক)</label>
+                <textarea name="description" rows="3" placeholder="বিনিয়োগ চুক্তি, অংশীদারিত্ব বা লভ্যাংশ হিসাবের সংক্ষিপ্ত বিবরণ..." class="w-full px-3.5 py-2 bg-slate-800 border border-white/15 rounded-xl text-white leading-relaxed"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">চুক্তিপত্র / ব্যাংক স্লিপ / প্রমাণপত্র (ঐচ্ছিক)</label>
+                <input type="file" name="document_image" accept="image/*,.pdf" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+                <span class="text-[10px] text-slate-500 block mt-1">ব্যাংক ডিপোজিট স্লিপ, বায়নানামা বা ভাউচারের কপি সংযুক্ত করতে পারেন</span>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-black text-xs shadow-xl transition-all cursor-pointer mt-2">
+                <i class="fa-solid fa-chart-line mr-1"></i> লভ্যাংশ সেভ করুন ও তহবিলে যোগ করুন
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Admin Reset Password Modal (President/Superadmin Only) -->
+<div id="adminResetPasswordModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-rose-500/40 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative animate-float">
+        <button onclick="closeModal('adminResetPasswordModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-4">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-key text-rose-400"></i>
+                <span>সদস্যের পাসওয়ার্ড রিসেট</span>
+            </h3>
+            <p id="admin_reset_member_info" class="text-xs text-rose-300 font-mono mt-1"></p>
+            <p class="text-[11px] text-slate-400 font-bangla mt-1">কোনো সদস্য পাসওয়ার্ড ভুলে গেলে অ্যাডমিন এখান থেকে সরাসরি নতুন পাসওয়ার্ড নির্ধারণ করে দিতে পারবেন।</p>
+        </div>
+
+        <form id="adminResetPasswordForm" method="POST" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">নতুন পাসওয়ার্ড (সর্বনিম্ন ৬ অক্ষর) *</label>
+                <input type="password" name="new_password" minlength="6" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">নতুন পাসওয়ার্ড পুনরায় লিখুন *</label>
+                <input type="password" name="new_password_confirmation" minlength="6" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+            </div>
+
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors shadow-lg cursor-pointer">
+                পাসওয়ার্ড রিসেট সম্পন্ন করুন
+            </button>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 
@@ -1883,26 +2397,75 @@
 
     function closeModal(id) {
         const m = document.getElementById(id);
-        if (m) {
+        if (!m) return;
+        
+        // Find inner card container for the slide-left and vanish animation
+        const inner = m.firstElementChild || m.querySelector('div');
+        if (inner) {
+            inner.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease';
+            inner.style.transform = 'translateX(-120%)';
+            inner.style.opacity = '0';
+            setTimeout(() => {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+                inner.style.transform = '';
+                inner.style.opacity = '';
+            }, 380);
+        } else {
             m.classList.add('hidden');
             m.classList.remove('flex');
         }
     }
 
-    function openPaymentModal() {
-        const m = document.getElementById('paymentModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
+    function openModalDirect(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        const inner = m.firstElementChild || m.querySelector('div');
+        if (inner) {
+            inner.style.transform = '';
+            inner.style.opacity = '';
+        }
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+    }
+
+    function openExpenseModal() {
+        openModalDirect('expenseModal');
+    }
+
+    function openProfitModal() {
+        openModalDirect('profitModal');
+    }
+
+    function openResetPasswordModal(email, name) {
+        const form = document.getElementById('adminResetPasswordForm');
+        if (form) {
+            form.action = `/member/reset-password/${encodeURIComponent(email)}`;
+        }
+        const info = document.getElementById('admin_reset_member_info');
+        if (info) {
+            info.innerText = `সদস্য: ${name} (${email})`;
+        }
+        openModalDirect('adminResetPasswordModal');
+    }
+
+    function toggleSpecialFundFields(checked) {
+        const f = document.getElementById('special_fund_fields');
+        if (f) {
+            if (checked) {
+                f.classList.remove('hidden');
+            } else {
+                f.classList.add('hidden');
+            }
         }
     }
 
+    function openPaymentModal() {
+        openModalDirect('paymentModal');
+    }
+
     function openDirectPaymentModal() {
-        const m = document.getElementById('directPaymentModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-        }
+        openModalDirect('directPaymentModal');
     }
 
     function openPaymentModalWithDue(amount, monthsCount) {
@@ -1912,11 +2475,7 @@
     }
 
     function openProfileModal() {
-        const m = document.getElementById('profileModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-        }
+        openModalDirect('profileModal');
     }
 
     function openApproveModal(id, memberName, amount, monthsCount, ref, proofUrl) {

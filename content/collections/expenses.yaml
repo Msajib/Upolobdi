@@ -1,0 +1,9 @@
+title: 'Expenses (সমিতির খরচের হিসাব)'
+template: default
+layout: layout
+revisions: false
+route: '/expenses/{slug}'
+sort_dir: desc
+sort_by: date
+sites:
+  - default

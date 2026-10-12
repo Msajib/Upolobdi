@@ -73,6 +73,20 @@
                     <span data-lang-en style="display:none;">{{ $ann['title_en'] ?: $ann['title_bn'] }}</span>
                 </h3>
 
+                @if(!empty($ann['is_special_fund']) && !empty($ann['special_fund_amount']))
+                <div class="p-4 rounded-2xl bg-amber-600/15 border-2 border-amber-700/40 text-center font-bangla space-y-1">
+                    <span class="inline-block px-3 py-1 rounded-full bg-amber-800 text-amber-100 font-bold text-xs">
+                        📢 বিশেষ তহবিল সংগ্রহ ঘোষণা
+                    </span>
+                    <div class="text-base sm:text-lg font-black text-[#5c1d1d] font-mono">
+                        নিয়মিত মাসিক কিস্তি ({{ number_format($settings['monthly_installment'] ?? 1000) }} BDT) + বিশেষ তহবিল ({{ number_format($ann['special_fund_amount']) }} BDT) = সর্বমোট {{ number_format(($settings['monthly_installment'] ?? 1000) + $ann['special_fund_amount']) }} BDT
+                    </div>
+                    @if(!empty($ann['effective_month']))
+                        <p class="text-xs text-[#7c4a1e] font-bold">প্রযোজ্য মাস / সময়সীমা: {{ $ann['effective_month'] }}</p>
+                    @endif
+                </div>
+                @endif
+
                 <div class="p-6 rounded-2xl bg-[#8c5220]/5 border-2 border-[#8c5220]/30 text-sm sm:text-base leading-relaxed text-justify font-bangla font-medium">
                     <span data-lang-bn>{{ $ann['body_bn'] }}</span>
                     <span data-lang-en style="display:none;">{{ $ann['body_en'] ?: $ann['body_bn'] }}</span>
@@ -1389,45 +1403,91 @@
         }
     }
 
-    // Announcement & Due Modal Chaining Controller with 24h Cookie Expiration
+    let popupAutoDismissTimer = null;
+
+    function startPopupAutoDismiss(callback) {
+        if (popupAutoDismissTimer) {
+            clearTimeout(popupAutoDismissTimer);
+            popupAutoDismissTimer = null;
+        }
+        popupAutoDismissTimer = setTimeout(() => {
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }, 10000); // 10 seconds auto-close
+    }
+
+    function clearPopupAutoDismiss() {
+        if (popupAutoDismissTimer) {
+            clearTimeout(popupAutoDismissTimer);
+            popupAutoDismissTimer = null;
+        }
+    }
+
+    // Announcement & Due Modal Chaining Controller with 24h Cookie Expiration & Slide-Left Animation
     function closeAndNextAnnouncement(currentIdx, annId) {
+        clearPopupAutoDismiss();
         if (annId) {
             dismissModalFor24Hours('ann_' + annId);
         }
 
         const currentModal = document.getElementById('royalAnnouncementModal-' + currentIdx);
         if (currentModal) {
-            currentModal.classList.add('hidden');
-            currentModal.classList.remove('flex');
+            const letter = currentModal.querySelector('.animate-float') || currentModal.firstElementChild || currentModal;
+            letter.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            letter.style.transform = 'translateX(-120%) rotate(-4deg)';
+            letter.style.opacity = '0';
+
+            setTimeout(() => {
+                currentModal.classList.add('hidden');
+                currentModal.classList.remove('flex');
+                letter.style.transform = '';
+                letter.style.opacity = '';
+                letter.style.transition = '';
+
+                let nextIdx = currentIdx + 1;
+                let foundNext = false;
+
+                while (true) {
+                    const nextModal = document.getElementById('royalAnnouncementModal-' + nextIdx);
+                    if (!nextModal) break;
+                    const nextAnnId = nextModal.getAttribute('data-ann-id');
+                    if (!isModalDismissed('ann_' + nextAnnId)) {
+                        nextModal.classList.remove('hidden');
+                        nextModal.classList.add('flex');
+                        foundNext = true;
+                        startPopupAutoDismiss(() => closeAndNextAnnouncement(nextIdx, nextAnnId));
+                        break;
+                    }
+                    nextIdx++;
+                }
+
+                if (!foundNext) {
+                    showDueWarningModalIfNotDismissed();
+                }
+            }, 550);
+            return;
         }
 
-        let nextIdx = currentIdx + 1;
-        let foundNext = false;
-
-        while (true) {
-            const nextModal = document.getElementById('royalAnnouncementModal-' + nextIdx);
-            if (!nextModal) break;
-            const nextAnnId = nextModal.getAttribute('data-ann-id');
-            if (!isModalDismissed('ann_' + nextAnnId)) {
-                nextModal.classList.remove('hidden');
-                nextModal.classList.add('flex');
-                foundNext = true;
-                break;
-            }
-            nextIdx++;
-        }
-
-        if (!foundNext) {
-            showDueWarningModalIfNotDismissed();
-        }
+        showDueWarningModalIfNotDismissed();
     }
 
     function dismissDueWarningModal() {
+        clearPopupAutoDismiss();
         dismissModalFor24Hours('due_alert');
         const dueModal = document.getElementById('publicDueWarningModal');
         if (dueModal) {
-            dueModal.classList.add('hidden');
-            dueModal.classList.remove('flex');
+            const inner = dueModal.querySelector('.animate-float') || dueModal.firstElementChild || dueModal;
+            inner.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            inner.style.transform = 'translateX(-120%)';
+            inner.style.opacity = '0';
+            setTimeout(() => {
+                dueModal.classList.add('hidden');
+                dueModal.classList.remove('flex');
+                inner.style.transform = '';
+                inner.style.opacity = '';
+                inner.style.transition = '';
+            }, 550);
         }
     }
 
@@ -1437,6 +1497,7 @@
             if (dueModal) {
                 dueModal.classList.remove('hidden');
                 dueModal.classList.add('flex');
+                startPopupAutoDismiss(() => dismissDueWarningModal());
             }
         }
     }
@@ -1452,6 +1513,7 @@
                 m.classList.remove('hidden');
                 m.classList.add('flex');
                 openedAnnouncement = true;
+                startPopupAutoDismiss(() => closeAndNextAnnouncement(i, annId));
                 break;
             }
         }

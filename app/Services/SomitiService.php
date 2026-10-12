@@ -15,6 +15,8 @@ class SomitiService
     protected ?array $cachedSettings = null;
     protected ?array $cachedMembers = null;
     protected ?array $cachedPayments = null;
+    protected ?array $cachedExpenses = null;
+    protected ?array $cachedProfits = null;
     protected ?array $cachedEvents = null;
     protected ?array $cachedRules = null;
     protected ?array $cachedProjects = null;
@@ -30,6 +32,8 @@ class SomitiService
         $this->cachedSettings = null;
         $this->cachedMembers = null;
         $this->cachedPayments = null;
+        $this->cachedExpenses = null;
+        $this->cachedProfits = null;
         $this->cachedEvents = null;
         $this->cachedRules = null;
         $this->cachedProjects = null;
@@ -410,8 +414,11 @@ class SomitiService
             $list = [];
 
             foreach ($entries as $entry) {
-                $email = $entry->get('member_email');
+                $email = $entry->get('member_email') ?: $entry->get('user_email');
                 $member = $this->getMemberByEmail($email ?: '');
+                if (!$member) {
+                    continue; // Only valid registered members are shown
+                }
                 $pStatus = $entry->get('payment_status') ?: $entry->get('status') ?: 'pending';
 
                 $entryType = $entry->get('entry_type') ?: 'own';
@@ -466,7 +473,7 @@ class SomitiService
                         default => strtoupper($entry->get('payment_method') ?: 'Cash')
                     },
                     'reference_number' => $entry->get('reference_number') ?: '',
-                    'payment_date' => $entry->get('payment_date') ?: $entry->date()->format('Y-m-d'),
+                    'payment_date' => $entry->get('payment_date') ?: ($entry->get('date') ?: date('Y-m-d')),
                     'status' => $pStatus,
                     'payment_status' => $pStatus,
                     'entry_type' => $entryType,
@@ -496,6 +503,109 @@ class SomitiService
         return $this->cachedPayments;
     }
 
+    /**
+     * Get All Somiti Expenses
+     */
+    public function getExpenses(): array
+    {
+        if ($this->cachedExpenses !== null) {
+            return $this->cachedExpenses;
+        }
+
+        if (! \Statamic\Facades\Collection::findByHandle('expenses')) {
+            return [];
+        }
+
+        $entries = Entry::query()->where('collection', 'expenses')->get();
+        $list = [];
+
+        foreach ($entries as $entry) {
+            $amount = (int) ($entry->get('amount') ?: 0);
+            $list[] = [
+                'id' => $entry->id(),
+                'slug' => $entry->slug(),
+                'title' => $entry->get('title'),
+                'category' => $entry->get('category') ?: 'সাধারণ খরচ',
+                'amount' => $amount,
+                'amount_bn' => $this->bnNumber(number_format($amount)),
+                'amount_words' => $this->amountInBnWords($amount),
+                'expense_date' => $entry->get('expense_date') ?: ($entry->get('date') ?: date('Y-m-d')),
+                'voucher_number' => $entry->get('voucher_number') ?: ('EXP-' . substr($entry->id(), 0, 8)),
+                'voucher_image' => $entry->get('voucher_image'),
+                'recorded_by' => $entry->get('recorded_by') ?: 'কমিটি সদস্য',
+                'recorded_by_email' => $entry->get('recorded_by_email'),
+                'description' => $entry->get('description') ?: '',
+            ];
+        }
+
+        // Sort by date descending
+        usort($list, fn($a, $b) => strcmp($b['expense_date'], $a['expense_date']));
+
+        $this->cachedExpenses = $list;
+        return $this->cachedExpenses;
+    }
+
+    /**
+     * Get All Somiti Investment Profits
+     */
+    public function getProfits(): array
+    {
+        if ($this->cachedProfits !== null) {
+            return $this->cachedProfits;
+        }
+
+        if (! \Statamic\Facades\Collection::findByHandle('profits')) {
+            return [];
+        }
+
+        $entries = Entry::query()->where('collection', 'profits')->get();
+        $list = [];
+
+        foreach ($entries as $entry) {
+            $amount = (int) ($entry->get('amount') ?: 0);
+            $profitType = $entry->get('profit_type') ?: 'one_time';
+            $sourceCategory = $entry->get('source_category') ?: 'business';
+
+            $sourceLabelBn = match($sourceCategory) {
+                'land' => 'জমি ক্রয়-বিক্রয়',
+                'business' => 'ব্যবসা ও বাণিজ্য',
+                'property' => 'ফ্ল্যাট ও রিয়েল এস্টেট',
+                'agro' => 'এগ্রো ও ডেইরি ফার্ম',
+                default => 'অন্যান্য বিনিয়োগ'
+            };
+
+            $typeLabelBn = match($profitType) {
+                'monthly' => 'মাসিক লভ্যাংশ',
+                'one_time' => 'এককালীন লভ্যাংশ',
+                default => 'এককালীন লভ্যাংশ'
+            };
+
+            $list[] = [
+                'id' => $entry->id(),
+                'slug' => $entry->slug(),
+                'title' => $entry->get('title'),
+                'source_category' => $sourceCategory,
+                'source_category_label' => $sourceLabelBn,
+                'profit_type' => $profitType,
+                'profit_type_label' => $typeLabelBn,
+                'amount' => $amount,
+                'amount_bn' => $this->bnNumber(number_format($amount)),
+                'amount_words' => $this->amountInBnWords($amount),
+                'profit_date' => $entry->get('profit_date') ?: ($entry->get('date') ?: date('Y-m-d')),
+                'reference_number' => $entry->get('reference_number') ?: ('PRF-' . substr($entry->id(), 0, 8)),
+                'document_image' => $entry->get('document_image'),
+                'recorded_by' => $entry->get('recorded_by') ?: 'কমিটি কর্মকর্তা',
+                'recorded_by_email' => $entry->get('recorded_by_email'),
+                'description' => $entry->get('description') ?: '',
+            ];
+        }
+
+        // Sort by date descending
+        usort($list, fn($a, $b) => strcmp($b['profit_date'], $a['profit_date']));
+
+        $this->cachedProfits = $list;
+        return $this->cachedProfits;
+    }
 
     /**
      * Get All Investment Projects
@@ -568,6 +678,9 @@ class SomitiService
                 'published_by_designation_en' => $entry->get('published_by_designation_en') ?: 'President',
                 'published_by_role'        => $entry->get('published_by_role') ?: 'superadmin',
                 'priority'                 => (int) ($entry->get('priority') ?: 99),
+                'is_special_fund'          => (bool) $entry->get('is_special_fund'),
+                'special_fund_amount'      => (int) ($entry->get('special_fund_amount') ?: 0),
+                'effective_month'          => $entry->get('effective_month') ?: '',
                 'allow_sharing'            => (bool) $entry->get('allow_sharing'),
                 'is_active'                => true,
             ];
@@ -733,9 +846,28 @@ class SomitiService
             }
         }
 
+        $expenses = $this->getExpenses();
+        $totalExpenses = 0;
+        foreach ($expenses as $exp) {
+            $totalExpenses += (int) ($exp['amount'] ?? 0);
+        }
+
+        $profits = $this->getProfits();
+        $totalProfit = 0;
+        foreach ($profits as $prof) {
+            $totalProfit += (int) ($prof['amount'] ?? 0);
+        }
+
+        $totalSomitiFund = $totalApprovedFund + $totalProfit;
+        $netBalance = max(0, $totalSomitiFund - $totalExpenses);
+
         $this->cachedOverview = [
             'total_members' => count($members),
             'total_approved_fund' => $totalApprovedFund,
+            'total_profit' => $totalProfit,
+            'total_somiti_fund' => $totalSomitiFund,
+            'total_expenses' => $totalExpenses,
+            'net_balance' => $netBalance,
             'total_pending_amount' => $totalPendingAmount,
             'total_approved_transactions' => $totalApprovedTransactions,
             'total_pending_transactions' => $totalPendingTransactions,

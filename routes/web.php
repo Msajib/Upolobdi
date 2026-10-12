@@ -46,7 +46,16 @@ Route::middleware(['auth'])->group(function () {
 
     // Printable & Downloadable Ledger Export (with pagination param)
     Route::get('/ledger/export', [DashboardController::class, 'exportLedger'])->name('ledger.export');
+    Route::get('/ledger/due-report', [DashboardController::class, 'viewDueReport'])->name('ledger.due_report');
     Route::get('/payment/receipt/{id}', [DashboardController::class, 'viewReceipt'])->name('payment.receipt');
+
+    // Expense Operations (President, Vice-President, Cashier)
+    Route::post('/expense/create', [DashboardController::class, 'createExpense'])->name('expense.create');
+    Route::post('/expense/delete/{id}', [DashboardController::class, 'deleteExpense'])->name('expense.delete');
+
+    // Profit Operations (President, Vice-President, Cashier)
+    Route::post('/profit/create', [DashboardController::class, 'createProfit'])->name('profit.create');
+    Route::post('/profit/delete/{id}', [DashboardController::class, 'deleteProfit'])->name('profit.delete');
 
     // Due Exemption (Cashier max 6 mo, Superadmin max 12 mo)
     Route::post('/member/exemption/{userId}', [DashboardController::class, 'grantExemption'])->name('member.exemption');
@@ -54,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     // Superadmin Member Management
     Route::post('/member/add', [DashboardController::class, 'addMember'])->name('member.add');
     Route::post('/member/update/{userId}', [DashboardController::class, 'updateMember'])->name('member.update');
+    Route::post('/member/reset-password/{userId}', [DashboardController::class, 'resetMemberPassword'])->name('member.reset_password');
 
     // Projects Management (President & VP)
     Route::post('/project/create', [DashboardController::class, 'createProject'])->name('project.create');

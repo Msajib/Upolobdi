@@ -76,6 +76,20 @@ class DashboardController extends Controller
         $rules = $this->somitiService->getRules();
         $projects = $this->somitiService->getProjects();
         $announcements = $this->somitiService->getAnnouncements();
+        $expenses = $this->somitiService->getExpenses();
+        $profits = $this->somitiService->getProfits();
+
+        // Paginated Payments for Global or Personal Ledger
+        $paymentsForLedger = ($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier') ? $allPayments : $userPayments;
+        $perPage = 15;
+        $page = max(1, (int) request()->query('page', 1));
+        $totalLedgerRecords = count($paymentsForLedger);
+        $totalLedgerPages = max(1, (int) ceil($totalLedgerRecords / $perPage));
+        if ($page > $totalLedgerPages) {
+            $page = $totalLedgerPages;
+        }
+        $currentLedgerPage = $page;
+        $displayPayments = array_slice($paymentsForLedger, ($page - 1) * $perPage, $perPage);
 
         return view('dashboard', compact(
             'currentUser',
@@ -88,12 +102,19 @@ class DashboardController extends Controller
             'rejectedPayments',
             'allPayments',
             'userPayments',
+            'displayPayments',
+            'totalLedgerRecords',
+            'totalLedgerPages',
+            'currentLedgerPage',
+            'perPage',
             'pendingPayments',
             'allMembersDue',
             'events',
             'rules',
             'projects',
-            'announcements'
+            'announcements',
+            'expenses',
+            'profits'
         ));
     }
 
@@ -168,10 +189,11 @@ class DashboardController extends Controller
         $currentUser = Auth::user();
         $userRole = $this->somitiService->getUserRole($currentUser);
         $isSuper = $userRole === 'superadmin';
+        $isAdmin = $userRole === 'admin';
         $isCashier = $userRole === 'cashier';
 
-        if (! $isSuper && ! $isCashier) {
-            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (Cashier or President Only)']);
+        if (! $isSuper && ! $isAdmin && ! $isCashier) {
+            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (সভাপতি, সহ-সভাপতি বা ক্যাশিয়ার কেবল এন্ট্রি করতে পারবেন)']);
         }
 
         $this->normalizePaymentInputs($request);
@@ -216,13 +238,28 @@ class DashboardController extends Controller
         $proofImagePath = null;
         if ($request->hasFile('proof_image')) {
             $file = $request->file('proof_image');
-            $filename = 'pay_proof_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/payments'), $filename);
-            $proofImagePath = '/uploads/payments/' . $filename;
+            if ($file && $file->isValid()) {
+                try {
+                    $targetDir = public_path('uploads/payments');
+                    if (!is_dir($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+                    $filename = 'pay_proof_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                    $file->move($targetDir, $filename);
+                    $proofImagePath = '/uploads/payments/' . $filename;
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Direct payment proof move failed: ' . $e->getMessage());
+                }
+            }
         }
 
-        $entryRoleText = $isSuper ? 'সজিব মোল্লা (সভাপতি)' : 'সাইফুল ইসলাম (ক্যাশিয়ার)';
-        $entryTypeKey = $isSuper ? 'superadmin' : 'cashier';
+        $entryRoleText = match($userRole) {
+            'superadmin' => ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (সভাপতি/সাধারণ সম্পাদক)',
+            'admin' => ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (সহ-সভাপতি/সহ-সাধারণ সম্পাদক)',
+            'cashier' => ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (ক্যাশিয়ার)',
+            default => ($currentUser->get('bangla_name') ?: $currentUser->get('name'))
+        };
+        $entryTypeKey = $userRole;
 
         $slug = 'pay-direct-' . Str::slug($memberData['name']) . '-' . time();
         $title = 'সরাসরি কিস্তি জমা: ' . $memberData['bangla_name'] . " ({$monthsDescription})";
@@ -240,8 +277,9 @@ class DashboardController extends Controller
                 'months_count' => $monthsCount,
                 'payment_months' => $monthsDescription,
                 'payment_method' => $validated['payment_method'],
-                'reference_number' => $validated['reference_number'],
+                'reference_number' => $validated['reference_number'] ?: ('CASH-REC-' . date('Ymd') . '-' . rand(100, 999)),
                 'payment_date' => $validated['payment_date'],
+                'date' => $validated['payment_date'],
                 'proof_image' => $proofImagePath,
                 'payment_status' => 'approved',
                 'status' => 'approved',
@@ -695,13 +733,25 @@ class DashboardController extends Controller
         $proofImagePath = null;
         if ($request->hasFile('proof_image')) {
             $file = $request->file('proof_image');
-            $filename = 'pay_proof_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/payments'), $filename);
-            $proofImagePath = '/uploads/payments/' . $filename;
+            if ($file && $file->isValid()) {
+                try {
+                    $targetDir = public_path('uploads/payments');
+                    if (!is_dir($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+                    $filename = 'pay_proof_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                    $file->move($targetDir, $filename);
+                    $proofImagePath = '/uploads/payments/' . $filename;
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Member payment proof move failed: ' . $e->getMessage());
+                }
+            }
         }
 
         $slug = 'pay-' . Str::slug($currentUser->get('name') ?: 'member') . '-' . time();
         $title = 'কিস্তি জমা: ' . ($currentUser->get('bangla_name') ?: $currentUser->get('name') ?: $currentUser->email()) . " ({$monthsDescription})";
+
+        $entryRoleText = ($currentUser->get('bangla_name') ?: $currentUser->get('name') ?: $currentUser->email()) . ' (সদস্য নিজে)';
 
         $entry = Entry::make()
             ->collection('payments')
@@ -714,11 +764,14 @@ class DashboardController extends Controller
                 'months_count' => $monthsCount,
                 'payment_months' => $monthsDescription,
                 'payment_method' => $validated['payment_method'],
-                'reference_number' => $validated['reference_number'],
+                'reference_number' => $validated['reference_number'] ?: ('PAY-' . date('Ymd') . '-' . rand(100, 999)),
                 'payment_date' => $validated['payment_date'],
+                'date' => $validated['payment_date'],
                 'proof_image' => $proofImagePath,
                 'payment_status' => 'pending',
                 'status' => 'pending',
+                'entry_type' => 'own',
+                'entry_created_by' => $entryRoleText,
             ]);
 
         $entry->save();
@@ -1196,6 +1249,9 @@ class DashboardController extends Controller
             'body_bn' => 'required|string',
             'body_en' => 'nullable|string',
             'announcement_date' => 'nullable|date',
+            'is_special_fund' => 'nullable|boolean',
+            'special_fund_amount' => 'nullable|numeric|min:0',
+            'effective_month' => 'nullable|string|max:100',
         ], [
             'title_bn.required' => 'ঘোষণাপত্রের বাংলা শিরোনাম দিন।',
             'body_bn.required' => 'ঘোষণাপত্রের মূল বক্তব্য (বাংলা) দিন।',
@@ -1223,6 +1279,10 @@ class DashboardController extends Controller
         $slug = 'notice-' . Str::slug($validated['title_bn']) . '-' . time();
         $authorName = $currentUser->get('bangla_name') ?: $currentUser->get('name') ?: $currentUser->email();
 
+        $isSpecialFund = $request->boolean('is_special_fund');
+        $specialFundAmount = (int) ($validated['special_fund_amount'] ?? 0);
+        $effectiveMonth = $validated['effective_month'] ?? '';
+
         $entry = Entry::make()
             ->collection('announcements')
             ->slug($slug)
@@ -1238,7 +1298,10 @@ class DashboardController extends Controller
                 'published_by_designation_bn' => $designationBn,
                 'published_by_designation_en' => $designationEn,
                 'published_by_role' => $userRole,
-                'priority' => $priority,
+                'priority' => $isSpecialFund ? 1 : $priority,
+                'is_special_fund' => $isSpecialFund,
+                'special_fund_amount' => $specialFundAmount,
+                'effective_month' => $effectiveMonth,
                 'allow_sharing' => true,
                 'is_active' => true,
             ]);
@@ -1246,7 +1309,11 @@ class DashboardController extends Controller
         $entry->save();
         $this->somitiService->clearCache();
 
-        return back()->with('success', '📜 রাজকীয় সমবায় ফরমান/ঘোষণাপত্র সফলভাবে জারি ও প্রকাশ করা হয়েছে!');
+        $successMsg = $isSpecialFund 
+            ? "📢 বিশেষ তহবিল সংগ্রহ ঘোষণা সফলভাবে জারি করা হয়েছে! (প্রতি সদস্যের অতিরিক্ত {$specialFundAmount} টাকা)"
+            : '📜 রাজকীয় সমবায় ফরমান/ঘোষণাপত্র সফলভাবে জারি ও প্রকাশ করা হয়েছে!';
+
+        return back()->with('success', $successMsg);
     }
 
     /**
@@ -1365,5 +1432,296 @@ class DashboardController extends Controller
 
         return view('receipt', compact('targetPayment', 'settings', 'currentUser', 'userRole'));
     }
+
+    /**
+     * Create Expense Voucher (President, VP, Cashier)
+     */
+    public function createExpense(Request $request)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin', 'cashier'])) {
+            return back()->withErrors(['error' => 'শুধুমাত্র সভাপতি, সহ-সভাপতি বা ক্যাশিয়ার খরচের ভাউচার যুক্ত করতে পারেন।']);
+        }
+
+        $this->normalizePaymentInputs($request);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|string|max:100',
+            'amount' => 'required|numeric|min:1',
+            'expense_date' => 'required|date',
+            'voucher_number' => 'nullable|string|max:100',
+            'description' => 'nullable|string|max:1000',
+            'voucher_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:20480',
+        ], [
+            'title.required' => 'খরচের বিবরণ/খাত প্রদান করুন।',
+            'category.required' => 'খরচের ক্যাটাগরি নির্বাচন করুন।',
+            'amount.required' => 'খরচের পরিমাণ প্রদান করুন।',
+            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১ টাকা হতে হবে।',
+            'expense_date.required' => 'খরচের তারিখ প্রদান করুন।',
+        ]);
+
+        $voucherImagePath = null;
+        if ($request->hasFile('voucher_image')) {
+            $file = $request->file('voucher_image');
+            if ($file && $file->isValid()) {
+                try {
+                    $targetDir = public_path('uploads/expenses');
+                    if (!is_dir($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+                    $filename = 'exp_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                    $file->move($targetDir, $filename);
+                    $voucherImagePath = '/uploads/expenses/' . $filename;
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Expense voucher upload failed: ' . $e->getMessage());
+                }
+            }
+        }
+
+        $recorderName = ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (' . $this->somitiService->getRoleTitle($userRole, 'bn') . ')';
+        $voucherNo = !empty($validated['voucher_number']) ? $validated['voucher_number'] : ('EXP-VOUCH-' . date('Ymd') . '-' . rand(100, 999));
+        $slug = 'expense-' . Str::slug($validated['title']) . '-' . time();
+
+        $entry = Entry::make()
+            ->collection('expenses')
+            ->slug($slug)
+            ->data([
+                'title' => $validated['title'],
+                'category' => $validated['category'],
+                'amount' => (int) $validated['amount'],
+                'expense_date' => $validated['expense_date'],
+                'date' => $validated['expense_date'],
+                'voucher_number' => $voucherNo,
+                'voucher_image' => $voucherImagePath,
+                'description' => $validated['description'] ?? '',
+                'recorded_by' => $recorderName,
+                'recorded_by_email' => $currentUser->email(),
+                'recorded_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+
+        $entry->save();
+        $this->somitiService->clearCache();
+
+        return back()->with('success', "খরচ ভাউচার সফলভাবে যুক্ত করা হয়েছে! সর্বমোট তহবিল থেকে " . number_format($validated['amount']) . " টাকা সমন্বয় করা হয়েছে।");
+    }
+
+    /**
+     * Delete Expense Voucher (Committee only)
+     */
+    public function deleteExpense($id)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin', 'cashier'])) {
+            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস']);
+        }
+
+        $entry = Entry::find($id);
+        if ($entry && $entry->collectionHandle() === 'expenses') {
+            $entry->delete();
+            $this->somitiService->clearCache();
+            return back()->with('success', 'খরচ ভাউচার সফলভাবে মুছে ফেলা হয়েছে এবং তহবিলে ফেরত সমন্বয় করা হয়েছে!');
+        }
+
+        return back()->withErrors(['error' => 'খরচ রেকর্ড পাওয়া যায়নি']);
+    }
+
+    /**
+     * Create Investment Profit Entry (President, VP, Cashier)
+     */
+    public function createProfit(Request $request)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin', 'cashier'])) {
+            return back()->withErrors(['error' => 'শুধুমাত্র সভাপতি, সহ-সভাপতি বা ক্যাশিয়ার বিনিয়োগের লভ্যাংশ যুক্ত করতে পারেন।']);
+        }
+
+        $this->normalizePaymentInputs($request);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'source_category' => 'required|string|in:land,business,property,agro,other',
+            'profit_type' => 'required|string|in:monthly,one_time',
+            'amount' => 'required|numeric|min:1',
+            'profit_date' => 'required|date',
+            'reference_number' => 'nullable|string|max:100',
+            'description' => 'nullable|string|max:1000',
+            'document_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:20480',
+        ], [
+            'title.required' => 'বিনিয়োগের খাত বা লভ্যাংশের বিবরণ প্রদান করুন।',
+            'source_category.required' => 'বিনিয়োগের খাত নির্বাচন করুন।',
+            'profit_type.required' => 'লভ্যাংশের ধরন (মাসিক বা এককালীন) নির্বাচন করুন।',
+            'amount.required' => 'লাভের টাকার পরিমাণ প্রদান করুন।',
+            'amount.min' => 'টাকার পরিমাণ ন্যূনতম ১ টাকা হতে হবে।',
+            'profit_date.required' => 'লভ্যাংশ প্রাপ্তির তারিখ প্রদান করুন।',
+        ]);
+
+        $documentImagePath = null;
+        if ($request->hasFile('document_image')) {
+            $file = $request->file('document_image');
+            if ($file && $file->isValid()) {
+                try {
+                    $targetDir = public_path('uploads/profits');
+                    if (!is_dir($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+                    $filename = 'profit_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                    $file->move($targetDir, $filename);
+                    $documentImagePath = '/uploads/profits/' . $filename;
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Profit document upload failed: ' . $e->getMessage());
+                }
+            }
+        }
+
+        $recorderName = ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (' . $this->somitiService->getRoleTitle($userRole, 'bn') . ')';
+        $refNo = !empty($validated['reference_number']) ? $validated['reference_number'] : ('PRF-' . date('Ymd') . '-' . rand(100, 999));
+        $slug = 'profit-' . Str::slug($validated['title']) . '-' . time();
+
+        $entry = Entry::make()
+            ->collection('profits')
+            ->slug($slug)
+            ->data([
+                'title' => $validated['title'],
+                'source_category' => $validated['source_category'],
+                'profit_type' => $validated['profit_type'],
+                'amount' => (int) $validated['amount'],
+                'profit_date' => $validated['profit_date'],
+                'date' => $validated['profit_date'],
+                'reference_number' => $refNo,
+                'document_image' => $documentImagePath,
+                'description' => $validated['description'] ?? '',
+                'recorded_by' => $recorderName,
+                'recorded_by_email' => $currentUser->email(),
+                'recorded_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]);
+
+        $entry->save();
+        $this->somitiService->clearCache();
+
+        return back()->with('success', "বিনিয়োগের লভ্যাংশ সফলভাবে যুক্ত হয়েছে! সর্বমোট তহবিলে " . number_format($validated['amount']) . " টাকা যোগ করা হয়েছে।");
+    }
+
+    /**
+     * Delete Profit Entry (Committee only)
+     */
+    public function deleteProfit($id)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin', 'cashier'])) {
+            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস']);
+        }
+
+        $entry = Entry::find($id);
+        if ($entry && $entry->collectionHandle() === 'profits') {
+            $entry->delete();
+            $this->somitiService->clearCache();
+            return back()->with('success', 'লভ্যাংশ রেকর্ড মুছে ফেলা হয়েছে এবং তহবিল থেকে সমন্বয় করা হয়েছে!');
+        }
+
+        return back()->withErrors(['error' => 'লভ্যাংশ রেকর্ড পাওয়া যায়নি']);
+    }
+
+    /**
+     * View & Printable Due Months Detailed Report
+     */
+    public function viewDueReport(Request $request)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin', 'cashier'])) {
+            return redirect()->route('dashboard')->withErrors(['error' => 'বকেয়া রিপোর্ট দেখার অনুমতি শুধুমাত্র সভাপতি, সহ-সভাপতি ও ক্যাশিয়ারের রয়েছে।']);
+        }
+
+        $settings = $this->somitiService->getSettings();
+        $monthlyRate = (int) ($settings['monthly_installment'] ?? 1000);
+        $members = $this->somitiService->getAllMembers();
+
+        $dueReports = [];
+        $totalDueAmount = 0;
+        $totalDueMembers = 0;
+        $totalDueMonths = 0;
+
+        foreach ($members as $m) {
+            $due = $this->somitiService->calculateDue($m, $monthlyRate);
+            $dueReports[] = $due;
+
+            if ($due['net_due_months'] > 0) {
+                $totalDueMembers++;
+                $totalDueMonths += $due['net_due_months'];
+                $totalDueAmount += $due['total_due_amount'];
+            }
+        }
+
+        return view('due-report', compact(
+            'currentUser',
+            'userRole',
+            'settings',
+            'monthlyRate',
+            'dueReports',
+            'totalDueAmount',
+            'totalDueMembers',
+            'totalDueMonths'
+        ));
+    }
+
+    /**
+     * Reset Member Password - Super Admin Only
+     */
+    public function resetMemberPassword(Request $request, $userId)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser->isSuper() && ! $currentUser->hasRole('superadmin')) {
+            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (Super Admin Only)']);
+        }
+
+        $validated = $request->validate([
+            'new_password' => 'required|string|min:6',
+        ], [
+            'new_password.required' => 'নতুন পাসওয়ার্ড প্রদান করুন।',
+            'new_password.min' => 'নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।',
+        ]);
+
+        $targetUser = User::find($userId);
+        if (! $targetUser) {
+            $targetUser = User::findByEmail($userId);
+        }
+
+        if (! $targetUser) {
+            return back()->withErrors(['error' => 'নির্দিষ্ট সদস্য পাওয়া যায়নি (User not found)']);
+        }
+
+        $targetUser->password($validated['new_password']);
+        $targetUser->save();
+        $this->somitiService->clearCache();
+
+        $memberName = $targetUser->get('bangla_name') ?: $targetUser->get('name') ?: $targetUser->email();
+        return back()->with('success', "সদস্য {$memberName}-এর নতুন পাসওয়ার্ড সফলভাবে সেট করা হয়েছে!");
+    }
 }
+
 
