@@ -24,7 +24,22 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
         });
 
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, Request $request) {
+            if ($request->is('logout')) {
+                \Illuminate\Support\Facades\Auth::guard('web')->logout();
+                return redirect()->route('home')->with('info', 'আপনি সফলভাবে লগআউট হয়েছেন (Logged Out)');
+            }
+            return redirect()->route('home', ['login' => '1'])->withErrors(['error' => 'সেশন মেয়াদোত্তীর্ণ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।']);
+        });
+
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, Request $request) {
+            if ($e->getStatusCode() === 403 && ($request->is('cp') || $request->is('cp/*'))) {
+                if (\Illuminate\Support\Facades\Auth::check()) {
+                    return redirect()->route('dashboard')->with('info', 'কন্ট্রোল প্যানেল শুধুমাত্র সিস্টেম অ্যাডমিনের জন্য সংরক্ষিত। আপনার সদস্য ড্যাশবোর্ডে পুনঃনির্দেশ করা হয়েছে।');
+                }
+                return redirect('/cp/auth/login');
+            }
+
             if ($e->getStatusCode() === 404) {
                 if ($request->is('api/*') || $request->expectsJson()) {
                     return response()->json(['message' => 'Not Found'], 404);

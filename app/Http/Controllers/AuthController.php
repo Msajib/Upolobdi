@@ -38,9 +38,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        try {
+            Auth::guard('web')->logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Logout notice: ' . $e->getMessage());
+        }
 
         return redirect()->route('home')->with('info', 'আপনি সফলভাবে লগআউট হয়েছেন (Logged Out)');
     }

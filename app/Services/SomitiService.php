@@ -21,6 +21,7 @@ class SomitiService
     protected ?array $cachedRules = null;
     protected ?array $cachedProjects = null;
     protected ?array $cachedAnnouncements = null;
+    protected ?array $cachedDecisions = null;
     protected ?array $cachedOverview = null;
     protected array $cachedDue = [];
 
@@ -38,6 +39,7 @@ class SomitiService
         $this->cachedRules = null;
         $this->cachedProjects = null;
         $this->cachedAnnouncements = null;
+        $this->cachedDecisions = null;
         $this->cachedOverview = null;
         $this->cachedDue = [];
     }
@@ -117,11 +119,11 @@ class SomitiService
             return 'superadmin';
         }
 
-        if (in_array('admin', $roles) || in_array('admin', $rawRoles) || str_contains($email, 'rubel@') || str_contains($designation, 'vice president') || str_contains($designation, 'সহ-সভাপতি')) {
+        if (in_array('admin', $roles) || in_array('admin', $rawRoles) || str_contains($email, 'kawser@') || str_contains($designation, 'secretary') || str_contains($designation, 'সম্পাদক') || str_contains($designation, 'vice president') || str_contains($designation, 'সহ-সভাপতি')) {
             return 'admin';
         }
 
-        if (in_array('cashier', $roles) || in_array('cashier', $rawRoles) || str_contains($email, 'saiful@') || str_contains($designation, 'cashier') || str_contains($designation, 'ক্যাশিয়ার')) {
+        if (in_array('cashier', $roles) || in_array('cashier', $rawRoles) || str_contains($email, 'rubel@') || str_contains($designation, 'cashier') || str_contains($designation, 'ক্যাশিয়ার')) {
             return 'cashier';
         }
 
@@ -287,6 +289,8 @@ class SomitiService
             'bangla_name' => $member['bangla_name'],
             'avatar' => $member['avatar'] ?? '/assets/images/avatar-default.svg',
             'role' => $member['role'],
+            'designation' => $member['designation'] ?? 'কার্যনির্বাহী সদস্য',
+            'phone' => $member['phone'] ?? '',
             'total_active_cycle_months' => $totalMonthsActive,
             'total_paid_months' => $totalPaidMonths,
             'total_paid_amount' => $totalPaidAmount,
@@ -664,6 +668,16 @@ class SomitiService
                 continue;
             }
 
+            // Expiry Check: If end_date is set and in the past, do not show on website
+            $endDate = $entry->get('end_date');
+            if ($endDate) {
+                try {
+                    if (\Carbon\Carbon::parse($endDate)->endOfDay()->isPast()) {
+                        continue;
+                    }
+                } catch (\Throwable $e) {}
+            }
+
             $list[] = [
                 'id'                       => $entry->id(),
                 'slug'                     => $entry->slug(),
@@ -672,6 +686,7 @@ class SomitiService
                 'body_bn'                  => $entry->get('body_bn') ?: '',
                 'body_en'                  => $entry->get('body_en') ?: '',
                 'announcement_date'        => $entry->get('announcement_date') ?: $entry->date()->format('Y-m-d'),
+                'end_date'                 => $endDate,
                 'published_by_email'       => $entry->get('published_by_email') ?: '',
                 'published_by_name'        => $entry->get('published_by_name') ?: 'সভাপতি',
                 'published_by_designation_bn' => $entry->get('published_by_designation_bn') ?: 'সভাপতি',
@@ -691,6 +706,66 @@ class SomitiService
 
         $this->cachedAnnouncements = $list;
         return $this->cachedAnnouncements;
+    }
+
+    /**
+     * Get All Meeting Decisions & Resolutions
+     */
+    public function getDecisions(): array
+    {
+        if ($this->cachedDecisions !== null) {
+            return $this->cachedDecisions;
+        }
+
+        if (! \Statamic\Facades\Collection::findByHandle('decisions')) {
+            return [];
+        }
+
+        $entries = Entry::query()->where('collection', 'decisions')->get();
+        $list = [];
+
+        foreach ($entries as $entry) {
+            $meetingDate = $entry->get('meeting_date') ?: ($entry->get('date') ?: date('Y-m-d'));
+            $createdAt = $entry->get('created_at') ?: ($entry->get('recorded_at') ?: $meetingDate);
+            $daysAgo = 0;
+            try {
+                $daysAgo = (int) \Carbon\Carbon::parse($createdAt)->diffInDays(\Carbon\Carbon::now(), false);
+                $daysAgo = max(0, $daysAgo);
+            } catch (\Throwable $e) {}
+
+            $list[] = [
+                'id' => $entry->id(),
+                'slug' => $entry->slug(),
+                'title' => $entry->get('title'),
+                'decision_number' => $entry->get('decision_number') ?: ('RES-' . substr($entry->id(), 0, 8)),
+                'meeting_date' => $meetingDate,
+                'decision_text' => $entry->get('decision_text') ?: ($entry->get('content') ?: ''),
+                'attendees' => $entry->get('attendees') ?: 'সকল সাধারণ সদস্যবৃন্দ',
+                'document_file' => $entry->get('document_file') ?: $entry->get('attachment'),
+                'recorded_by' => $entry->get('recorded_by') ?: 'কমিটি সচিবালয়',
+                'created_by_name' => $entry->get('created_by_name') ?: ($entry->get('recorded_by') ?: 'কমিটি সচিবালয়'),
+                'recorded_by_email' => $entry->get('recorded_by_email'),
+                'created_at' => $createdAt,
+                'status' => 'approved',
+                'is_locked' => true,
+                'days_ago' => $daysAgo,
+                'is_active_on_landing' => ($daysAgo <= 30),
+            ];
+        }
+
+        usort($list, fn($a, $b) => strcmp($b['meeting_date'], $a['meeting_date']));
+
+        $this->cachedDecisions = $list;
+        return $this->cachedDecisions;
+    }
+
+    /**
+     * Get Active Decisions for Public Website (Shown for 30 days after creation)
+     */
+    public function getActiveDecisions(int $maxDays = 30): array
+    {
+        $all = $this->getDecisions();
+        return array_values(array_filter($all, fn($d) => ($d['days_ago'] ?? 0) <= $maxDays));
     }
 
 
@@ -895,8 +970,8 @@ class SomitiService
                 'en' => 'President (Super Admin)',
             ],
             'admin' => [
-                'bn' => 'সহ-সভাপতি (Vice President)',
-                'en' => 'Vice President (Admin)',
+                'bn' => 'সাধারণ সম্পাদক (Secretary)',
+                'en' => 'Secretary (Admin)',
             ],
             'cashier' => [
                 'bn' => 'ক্যাশিয়ার (Cashier)',

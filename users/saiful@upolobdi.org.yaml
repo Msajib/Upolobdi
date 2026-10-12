@@ -1,6 +1,6 @@
 name: 'Saiful Islam'
 bangla_name: 'সাইফুল ইসলাম'
-designation: 'ক্যাশিয়ার (Cashier)'
+designation: 'কার্যনির্বাহী সদস্য (Member)'
 member_id: USS-003
 phone: 01711-000003
 joined_date: '2020-01-01'
@@ -8,6 +8,6 @@ avatar: /assets/images/avatars/saiful.jpg
 exemption_months: 0
 is_active: true
 roles:
-  - cashier
+  - member
 id: 9b6b72ac-e229-4e36-a193-48e1a8dd74e4
 password_hash: $2y$10$FPVF0jfMN55gR9.vWAwF1uFTl/kWI6DtJrOJpMrjGvF2ZVjb6uS1y

@@ -13,20 +13,20 @@
 | ভূমিকা (Role) | নাম (Name) | Email | Password |
 |---|---|---|---|
 | **সভাপতি (President / Super Admin)** | সজিব মোল্লা (Sajib Mulla) | `sajib@upolobdi.org` | `password123` |
-| **সহ-সভাপতি (Vice President / Admin)** | রুবেল মোল্লা (Rubel Mulla) | `rubel@upolobdi.org` | `password123` |
-| **ক্যাশিয়ার (Treasurer / Cashier)** | সাইফুল ইসলাম (Saiful Islam) | `saiful@upolobdi.org` | `password123` |
-| **সদস্য (Member)** | কাউসার (Kawser) | `kawser@upolobdi.org` | `password123` |
-| **সদস্য (Member)** | দৌলত (Doulot) | `doulot@upolobdi.org` | `password123` |
-| **সদস্য (Member)** | ফেরদৌস (Ferdous) | `ferdous@upolobdi.org` | `password123` |
+| **সাধারণ সম্পাদক (Secretary / Admin)** | কাউসার (Kawser) | `kawser@upolobdi.org` | `password123` |
+| **ক্যাশিয়ার (Treasurer / Cashier)** | রুবেল মোল্লা (Rubel Mulla) | `rubel@upolobdi.org` | `password123` |
+| **কার্যনির্বাহী সদস্য (Member)** | সাইফুল ইসলাম (Saiful Islam) | `saiful@upolobdi.org` | `password123` |
+| **কার্যনির্বাহী সদস্য (Member)** | দৌলত (Doulot) | `doulot@upolobdi.org` | `password123` |
+| **কার্যনির্বাহী সদস্য (Member)** | ফেরদৌস (Ferdous) | `ferdous@upolobdi.org` | `password123` |
 
 ### Statamic Control Panel (CP) Superadmin Login
 
 > ⚠️ **The Statamic Control Panel (`/cp`) has dedicated administrator credentials.**  
 > For daily somiti operations, all committee members and founders use the Member Portal above.
 
-| CP URL | Email | Password |
+| CP URL (Live & Local) | Email | Password |
 |---|---|---|
-| `http://127.0.0.1:8000/cp` | `superadmin@upolobdi.org` | `Secret123` |
+| `https://upolobdi.com/cp` (or `http://localhost:8000/cp`) | `superadmin@upolobdi.org` | `Secret123` |
 
 ---
 

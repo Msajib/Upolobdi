@@ -19,7 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (request()->hasHeader('x-forwarded-host') || str_contains(request()->getHttpHost(), 'ngrok')) {
+        if (
+            (request()->hasHeader('x-forwarded-proto') && request()->header('x-forwarded-proto') === 'https') ||
+            (request()->hasHeader('x-forwarded-ssl') && request()->header('x-forwarded-ssl') === 'on') ||
+            request()->hasHeader('x-forwarded-host') ||
+            request()->isSecure() ||
+            str_contains(request()->getHttpHost(), 'upolobdi.com') ||
+            str_contains(request()->getHttpHost(), 'ngrok')
+        ) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }

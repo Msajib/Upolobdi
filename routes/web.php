@@ -17,7 +17,7 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Native Android App Direct Download
 Route::get('/app/download', function () {
@@ -48,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ledger/export', [DashboardController::class, 'exportLedger'])->name('ledger.export');
     Route::get('/ledger/due-report', [DashboardController::class, 'viewDueReport'])->name('ledger.due_report');
     Route::get('/payment/receipt/{id}', [DashboardController::class, 'viewReceipt'])->name('payment.receipt');
+    Route::get('/rules/download', [DashboardController::class, 'downloadRules'])->name('rules.download');
+    Route::get('/ledger/members-summary', [DashboardController::class, 'downloadMembersSummary'])->name('ledger.members_summary');
+    Route::get('/finance/full-audit', [DashboardController::class, 'downloadFullAuditStatement'])->name('finance.full_audit');
 
     // Expense Operations (President, Vice-President, Cashier)
     Route::post('/expense/create', [DashboardController::class, 'createExpense'])->name('expense.create');
@@ -56,6 +59,9 @@ Route::middleware(['auth'])->group(function () {
     // Profit Operations (President, Vice-President, Cashier)
     Route::post('/profit/create', [DashboardController::class, 'createProfit'])->name('profit.create');
     Route::post('/profit/delete/{id}', [DashboardController::class, 'deleteProfit'])->name('profit.delete');
+
+    // Meeting Decisions (President & Secretary & Superadmin) - Immutable Once Approved
+    Route::post('/decision/create', [DashboardController::class, 'createDecision'])->name('decision.create');
 
     // Due Exemption (Cashier max 6 mo, Superadmin max 12 mo)
     Route::post('/member/exemption/{userId}', [DashboardController::class, 'grantExemption'])->name('member.exemption');

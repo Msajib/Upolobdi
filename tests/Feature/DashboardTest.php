@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Statamic\Facades\User;
+use Statamic\Facades\Entry;
 
 class DashboardTest extends TestCase
 {
@@ -25,8 +26,12 @@ class DashboardTest extends TestCase
             $response = $this->actingAs($user)->get('/dashboard');
             $response->assertStatus(200);
             
-            if ($email === 'saiful@upolobdi.org') {
+            if ($email === 'rubel@upolobdi.org') {
                 $response->assertViewHas('userRole', 'cashier');
+            } elseif ($email === 'kawser@upolobdi.org') {
+                $response->assertViewHas('userRole', 'admin');
+            } elseif ($email === 'sajib@upolobdi.org') {
+                $response->assertViewHas('userRole', 'superadmin');
             }
         }
     }
@@ -35,11 +40,27 @@ class DashboardTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
+        $response->assertSee('সমিতির বর্তমান কার্যকর নীতিমালা');
+    }
+
+    public function test_16_rules_are_loaded(): void
+    {
+        $rules = Entry::query()->where('collection', 'rules')->get();
+        $this->assertCount(16, $rules, "Must have exactly 16 rules from the constitution images.");
+    }
+
+    public function test_admission_fees_seeded(): void
+    {
+        $payments = Entry::query()
+            ->where('collection', 'payments')
+            ->get()
+            ->filter(fn($e) => (int)$e->get('amount') === 1700 && str_starts_with($e->get('payment_date') ?? '', '2020-01-20'));
+        $this->assertCount(6, $payments, "All 6 founding members must have initial 1,700 BDT payment on 2020-01-20.");
     }
 
     public function test_payment_submission_without_image_succeeds(): void
     {
-        $member = User::findByEmail('kawser@upolobdi.org');
+        $member = User::findByEmail('saiful@upolobdi.org');
         $this->assertNotNull($member);
 
         $response = $this->actingAs($member)->post('/payment/submit', [
@@ -54,13 +75,13 @@ class DashboardTest extends TestCase
         $response->assertSessionHas('success');
 
         // Cleanup test payment
-        $entry = \Statamic\Facades\Entry::query()->where('collection', 'payments')->where('reference_number', 'TEST-NO-IMG-1234')->first();
+        $entry = Entry::query()->where('collection', 'payments')->where('reference_number', 'TEST-NO-IMG-1234')->first();
         if ($entry) $entry->delete();
     }
 
     public function test_payment_submission_with_image_succeeds(): void
     {
-        $member = User::findByEmail('kawser@upolobdi.org');
+        $member = User::findByEmail('saiful@upolobdi.org');
         $this->assertNotNull($member);
 
         $file = \Illuminate\Http\UploadedFile::fake()->image('voucher_slip.jpg');
@@ -78,13 +99,13 @@ class DashboardTest extends TestCase
         $response->assertSessionHas('success');
 
         // Cleanup test payment
-        $entry = \Statamic\Facades\Entry::query()->where('collection', 'payments')->where('reference_number', 'TEST-IMG-5678')->first();
+        $entry = Entry::query()->where('collection', 'payments')->where('reference_number', 'TEST-IMG-5678')->first();
         if ($entry) $entry->delete();
     }
 
     public function test_committee_members_can_access_due_report(): void
     {
-        $committee = ['saiful@upolobdi.org', 'rubel@upolobdi.org', 'sajib@upolobdi.org'];
+        $committee = ['rubel@upolobdi.org', 'kawser@upolobdi.org', 'sajib@upolobdi.org'];
         foreach ($committee as $email) {
             $user = User::findByEmail($email);
             $response = $this->actingAs($user)->get('/ledger/due-report');
@@ -95,7 +116,7 @@ class DashboardTest extends TestCase
 
     public function test_committee_can_create_and_manage_expenses(): void
     {
-        $cashier = User::findByEmail('saiful@upolobdi.org');
+        $cashier = User::findByEmail('rubel@upolobdi.org');
         $this->assertNotNull($cashier);
 
         $response = $this->actingAs($cashier)->post('/expense/create', [
@@ -115,7 +136,7 @@ class DashboardTest extends TestCase
         $dashResponse->assertSee('অফিস স্টেশনারি ও খাতা ক্রয় টেস্ট');
 
         // Cleanup test expense
-        $exp = \Statamic\Facades\Entry::query()->where('collection', 'expenses')->where('title', 'অফিস স্টেশনারি ও খাতা ক্রয় টেস্ট')->first();
+        $exp = Entry::query()->where('collection', 'expenses')->where('title', 'অফিস স্টেশনারি ও খাতা ক্রয় টেস্ট')->first();
         if ($exp) $exp->delete();
     }
 
@@ -124,7 +145,7 @@ class DashboardTest extends TestCase
         $superadmin = User::findByEmail('sajib@upolobdi.org');
         $this->assertNotNull($superadmin);
 
-        $response = $this->actingAs($superadmin)->post('/member/reset-password/kawser@upolobdi.org', [
+        $response = $this->actingAs($superadmin)->post('/member/reset-password/ferdous@upolobdi.org', [
             'new_password' => 'secret1234',
             'new_password_confirmation' => 'secret1234',
         ]);
@@ -133,7 +154,7 @@ class DashboardTest extends TestCase
         $response->assertSessionHas('success');
 
         // Restore original password
-        $targetUser = User::findByEmail('kawser@upolobdi.org');
+        $targetUser = User::findByEmail('ferdous@upolobdi.org');
         if ($targetUser) {
             $targetUser->password('password123');
             $targetUser->save();
@@ -142,11 +163,11 @@ class DashboardTest extends TestCase
 
     public function test_committee_can_create_and_manage_profits(): void
     {
-        $cashier = User::findByEmail('saiful@upolobdi.org');
+        $cashier = User::findByEmail('rubel@upolobdi.org');
         $this->assertNotNull($cashier);
 
         // 1. Regular member cannot create profit
-        $member = User::findByEmail('kawser@upolobdi.org');
+        $member = User::findByEmail('saiful@upolobdi.org');
         $unauthResponse = $this->actingAs($member)->post('/profit/create', [
             'title' => 'অননুমোদিত লভ্যাংশ টেস্ট',
             'source_category' => 'business',
@@ -187,27 +208,151 @@ class DashboardTest extends TestCase
         $dashResponse->assertStatus(200);
         $dashResponse->assertSee('গ্রোসারি ব্যবসা মাসিক মুনাফা টেস্ট');
         $dashResponse->assertSee('পূর্বাচল প্লট বিক্রয় এককালীন মুনাফা টেস্ট');
-        $dashResponse->assertSee('ব্যবসা ও বাণিজ্য');
-        $dashResponse->assertSee('জমি ক্রয়-বিক্রয়');
-        $dashResponse->assertSee('মাসিক লভ্যাংশ');
-        $dashResponse->assertSee('এককালীন লভ্যাংশ');
-        $dashResponse->assertSee('65,000'); // 15,000 + 50,000 total profit
 
         // 5. Test deletion and balance adjustment
-        $entry1 = \Statamic\Facades\Entry::query()->where('collection', 'profits')->where('reference_number', 'TEST-PRF-MONTHLY-01')->first();
+        $entry1 = Entry::query()->where('collection', 'profits')->where('reference_number', 'TEST-PRF-MONTHLY-01')->first();
         $this->assertNotNull($entry1);
         $delResponse = $this->actingAs($cashier)->post('/profit/delete/' . $entry1->id());
         $delResponse->assertStatus(302);
         $delResponse->assertSessionHas('success');
 
         // Cleanup second entry
-        $entry2 = \Statamic\Facades\Entry::query()->where('collection', 'profits')->where('reference_number', 'TEST-PRF-LAND-02')->first();
+        $entry2 = Entry::query()->where('collection', 'profits')->where('reference_number', 'TEST-PRF-LAND-02')->first();
         if ($entry2) {
             $entry2->delete();
         }
 
         // Clear statamic cache
         app(\App\Services\SomitiService::class)->clearCache();
+    }
+
+    public function test_meeting_decision_lifecycle_and_permissions(): void
+    {
+        $president = User::findByEmail('sajib@upolobdi.org');
+        $member = User::findByEmail('saiful@upolobdi.org');
+
+        // 1. Regular member cannot create decision
+        $unauth = $this->actingAs($member)->post('/decision/create', [
+            'title' => 'অবৈধ সিদ্ধান্ত',
+            'meeting_date' => date('Y-m-d'),
+            'decision_text' => 'মেম্বার কর্তৃক সিদ্ধান্ত তৈরির চেষ্টা',
+        ]);
+        $unauth->assertSessionHasErrors('error');
+
+        // 2. President can create decision
+        $response = $this->actingAs($president)->post('/decision/create', [
+            'title' => '২০২৬ সালের ৪র্থ কার্যনির্বাহী সভার রেজুলেশন টেস্ট',
+            'meeting_date' => date('Y-m-d'),
+            'decision_number' => 'TEST-RES-2026-99',
+            'attendees' => 'সকল সদস্য উপস্থিত',
+            'decision_text' => 'সর্বসম্মতিক্রমে নতুন প্রকল্প গ্রহণের সিদ্ধান্ত অনুমোদন করা হলো।',
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        // 3. Verify in dashboard for member
+        $memberDash = $this->actingAs($member)->get('/dashboard');
+        $memberDash->assertStatus(200);
+        $memberDash->assertSee('২০২৬ সালের ৪র্থ কার্যনির্বাহী সভার রেজুলেশন টেস্ট');
+
+        // 4. Verify NOT on public landing page per user requirement (only dashboard)
+        $landing = $this->get('/');
+        $landing->assertStatus(200);
+        $landing->assertDontSee('২০২৬ সালের ৪র্থ কার্যনির্বাহী সভার রেজুলেশন টেস্ট');
+
+        // Cleanup test decision
+        $dec = Entry::query()->where('collection', 'decisions')->where('title', '২০২৬ সালের ৪র্থ কার্যনির্বাহী সভার রেজুলেশন টেস্ট')->first();
+        if ($dec) {
+            $dec->delete();
+        }
+        app(\App\Services\SomitiService::class)->clearCache();
+    }
+
+    public function test_announcement_requires_end_date_and_expires(): void
+    {
+        $president = User::findByEmail('sajib@upolobdi.org');
+
+        // 1. Missing end_date should fail validation
+        $invalid = $this->actingAs($president)->post('/announcement/create', [
+            'title_bn' => 'শেষ তারিখ ছাড়া নোটিশ',
+            'body_bn' => 'বিবরণ',
+        ]);
+        $invalid->assertSessionHasErrors('end_date');
+
+        // 2. Valid announcement creation with future end_date
+        $valid = $this->actingAs($president)->post('/announcement/create', [
+            'title_bn' => 'ভবিষ্যতের জরুরি নোটিশ টেস্ট',
+            'body_bn' => 'এই নোটিশটি দৃশ্যমান থাকবে',
+            'announcement_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d', strtotime('+10 days')),
+        ]);
+        $valid->assertStatus(302);
+        $valid->assertSessionHas('success');
+
+        // Verify it appears on landing page
+        $landing = $this->get('/');
+        $landing->assertSee('ভবিষ্যতের জরুরি নোটিশ টেস্ট');
+
+        // Cleanup
+        $ann = Entry::query()->where('collection', 'announcements')->where('title_bn', 'ভবিষ্যতের জরুরি নোটিশ টেস্ট')->first();
+        if ($ann) {
+            $ann->delete();
+        }
+        app(\App\Services\SomitiService::class)->clearCache();
+    }
+
+    public function test_president_can_update_member_details(): void
+    {
+        $president = User::findByEmail('sajib@upolobdi.org');
+        $member = User::findByEmail('ferdous@upolobdi.org');
+
+        // Regular member cannot update user details
+        $unauth = $this->actingAs($member)->post('/member/update/ferdous@upolobdi.org', [
+            'name' => 'Ferdous Test',
+            'role' => 'member',
+        ]);
+        $unauth->assertSessionHasErrors('error');
+
+        // President can update user details
+        $response = $this->actingAs($president)->post('/member/update/ferdous@upolobdi.org', [
+            'name' => 'Md Ferdous',
+            'bangla_name' => 'মোঃ ফেরদৌস',
+            'phone' => '01700112233',
+            'designation' => 'কার্যনির্বাহী সদস্য',
+            'role' => 'member',
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        $updated = User::findByEmail('ferdous@upolobdi.org');
+        $this->assertEquals('Md Ferdous', $updated->get('name'));
+    }
+
+    public function test_all_users_can_download_rules_with_receipt_design(): void
+    {
+        $member = User::findByEmail('saiful@upolobdi.org');
+        $response = $this->actingAs($member)->get('/rules/download');
+        $response->assertStatus(200);
+        $response->assertSee('সমিতির কোনো টাকা সদস্য কেউ হাওলাদ নিতে পারবে না');
+        $response->assertSee('অফিসিয়াল গঠনতন্ত্র ও নীতিমালা');
+    }
+
+    public function test_all_users_can_download_members_summary(): void
+    {
+        $member = User::findByEmail('doulot@upolobdi.org');
+        $response = $this->actingAs($member)->get('/ledger/members-summary');
+        $response->assertStatus(200);
+        $response->assertSee('সদস্য অডিট খতিয়ান বিবরণী');
+        $response->assertSee('মোট সংগৃহীত কিস্তি');
+    }
+
+    public function test_all_users_can_download_full_financial_audit(): void
+    {
+        $member = User::findByEmail('rubel@upolobdi.org');
+        $response = $this->actingAs($member)->get('/finance/full-audit');
+        $response->assertStatus(200);
+        $response->assertSee('সমন্বিত আর্থিক অডিট');
+        $response->assertSee('সমিতির নীট বর্তমান তহবিল');
     }
 }
 

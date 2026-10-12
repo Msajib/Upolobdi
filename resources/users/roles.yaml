@@ -3,7 +3,7 @@ superadmin:
   permissions:
     - super
 admin:
-  title: 'সহ-সভাপতি (Admin)'
+  title: 'সাধারণ সম্পাদক (Secretary)'
   permissions:
     - 'access cp'
     - 'view events entries'

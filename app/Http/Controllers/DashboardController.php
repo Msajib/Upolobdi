@@ -78,6 +78,7 @@ class DashboardController extends Controller
         $announcements = $this->somitiService->getAnnouncements();
         $expenses = $this->somitiService->getExpenses();
         $profits = $this->somitiService->getProfits();
+        $decisions = $this->somitiService->getDecisions();
 
         // Paginated Payments for Global or Personal Ledger
         $paymentsForLedger = ($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier') ? $allPayments : $userPayments;
@@ -114,7 +115,8 @@ class DashboardController extends Controller
             'projects',
             'announcements',
             'expenses',
-            'profits'
+            'profits',
+            'decisions'
         ));
     }
 
@@ -358,6 +360,76 @@ class DashboardController extends Controller
             'totalPages',
             'totalRecords',
             'perPage'
+        ));
+    }
+
+    /**
+     * Download Official Rules & Bylaws with Receipt Design
+     */
+    public function downloadRules()
+    {
+        $rules = $this->somitiService->getRules();
+        $settings = $this->somitiService->getSettings();
+        $currentUser = Auth::user();
+
+        return view('rules-download', compact('rules', 'settings', 'currentUser'));
+    }
+
+    /**
+     * Download All Members Payment & Due Audit Statement for All Logged-in Users
+     */
+    public function downloadMembersSummary()
+    {
+        $settings = $this->somitiService->getSettings();
+        $monthlyAmount = (int) ($settings['monthly_installment'] ?? 1000);
+        $members = $this->somitiService->getAllMembers();
+
+        $membersDue = [];
+        foreach ($members as $m) {
+            $membersDue[] = $this->somitiService->calculateDue($m, $monthlyAmount);
+        }
+
+        $totalPaidSum = array_sum(array_column($membersDue, 'total_paid_amount'));
+        $totalDueSum = array_sum(array_column($membersDue, 'total_due_amount'));
+        $currentUser = Auth::user();
+
+        return view('members-summary-download', compact(
+            'membersDue',
+            'settings',
+            'monthlyAmount',
+            'totalPaidSum',
+            'totalDueSum',
+            'currentUser'
+        ));
+    }
+
+    /**
+     * Download Complete Financial Audit Statement (Expenses, Profits, User Payments, Net Fund)
+     */
+    public function downloadFullAuditStatement()
+    {
+        $overview = $this->somitiService->getFinancialOverview();
+        $expenses = $this->somitiService->getExpenses();
+        $profits = $this->somitiService->getProfits();
+        $settings = $this->somitiService->getSettings();
+        $monthlyAmount = (int) ($settings['monthly_installment'] ?? 1000);
+        $members = $this->somitiService->getAllMembers();
+
+        $membersDue = [];
+        foreach ($members as $m) {
+            $membersDue[] = $this->somitiService->calculateDue($m, $monthlyAmount);
+        }
+
+        $currentUser = Auth::user();
+
+        return view('full-audit-download', compact(
+            'overview',
+            'expenses',
+            'profits',
+            'membersDue',
+            'settings',
+            'monthlyAmount',
+            'currentUser'
         ));
     }
 
@@ -977,7 +1049,7 @@ class DashboardController extends Controller
             'new_password.min' => 'নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।',
         ]);
 
-        $targetUser = User::find($userId);
+        $targetUser = User::find($userId) ?: User::findByEmail($userId);
         if (! $targetUser) {
             return back()->withErrors(['error' => 'সদস্য পাওয়া যায়নি (User not found)']);
         }
@@ -986,7 +1058,7 @@ class DashboardController extends Controller
         if (!empty($validated['bangla_name'])) {
             $targetUser->set('bangla_name', $validated['bangla_name']);
         }
-        if (!empty($validated['phone'])) {
+        if (isset($validated['phone'])) {
             $targetUser->set('phone', $validated['phone']);
         }
         if (!empty($validated['designation'])) {
@@ -994,9 +1066,16 @@ class DashboardController extends Controller
         }
         $targetUser->set('is_active', $request->boolean('is_active', true));
 
-        $targetUser->roles([$validated['role']]);
+        $existingRoles = $targetUser->roles()->map->handle()->all();
+        foreach ($existingRoles as $r) {
+            $targetUser->removeRole($r);
+        }
+
         if ($validated['role'] === 'superadmin') {
             $targetUser->makeSuper();
+            $targetUser->assignRole('superadmin');
+        } else {
+            $targetUser->assignRole($validated['role']);
         }
 
         if (!empty($validated['new_password'])) {
@@ -1249,12 +1328,14 @@ class DashboardController extends Controller
             'body_bn' => 'required|string',
             'body_en' => 'nullable|string',
             'announcement_date' => 'nullable|date',
+            'end_date' => 'required|date',
             'is_special_fund' => 'nullable|boolean',
             'special_fund_amount' => 'nullable|numeric|min:0',
             'effective_month' => 'nullable|string|max:100',
         ], [
             'title_bn.required' => 'ঘোষণাপত্রের বাংলা শিরোনাম দিন।',
             'body_bn.required' => 'ঘোষণাপত্রের মূল বক্তব্য (বাংলা) দিন।',
+            'end_date.required' => 'ঘোষণাপত্র প্রদর্শনের শেষ তারিখ (End Date) প্রদান করা আবশ্যক।',
         ]);
 
         // Determine priority and royal designation
@@ -1271,9 +1352,9 @@ class DashboardController extends Controller
             $designationBn = 'ক্যাশিয়ার';
             $designationEn = 'Cashier & Treasurer';
         } elseif ($userRole === 'admin') {
-            $priority = 3; // Vice President is 3rd priority
-            $designationBn = 'সহ-সভাপতি';
-            $designationEn = 'Vice President';
+            $priority = 3; // Secretary is 3rd priority
+            $designationBn = 'সাধারণ সম্পাদক';
+            $designationEn = 'Secretary';
         }
 
         $slug = 'notice-' . Str::slug($validated['title_bn']) . '-' . time();
@@ -1289,10 +1370,11 @@ class DashboardController extends Controller
             ->data([
                 'title' => $validated['title_bn'],
                 'title_bn' => $validated['title_bn'],
-                'title_en' => $validated['title_en'] ?: $validated['title_bn'],
+                'title_en' => ($validated['title_en'] ?? null) ?: $validated['title_bn'],
                 'body_bn' => $validated['body_bn'],
-                'body_en' => $validated['body_en'] ?: $validated['body_bn'],
-                'announcement_date' => $validated['announcement_date'] ?: Carbon::now()->format('Y-m-d'),
+                'body_en' => ($validated['body_en'] ?? null) ?: $validated['body_bn'],
+                'announcement_date' => ($validated['announcement_date'] ?? null) ?: Carbon::now()->format('Y-m-d'),
+                'end_date' => $validated['end_date'],
                 'published_by_email' => $currentUser->email(),
                 'published_by_name' => $authorName,
                 'published_by_designation_bn' => $designationBn,
@@ -1344,6 +1426,7 @@ class DashboardController extends Controller
             'body_bn' => 'required|string',
             'body_en' => 'nullable|string',
             'announcement_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
         ], [
             'title_bn.required' => 'ঘোষণাপত্রের বাংলা শিরোনাম দিন।',
             'body_bn.required' => 'ঘোষণাপত্রের মূল বক্তব্য (বাংলা) দিন।',
@@ -1351,11 +1434,14 @@ class DashboardController extends Controller
 
         $entry->set('title', $validated['title_bn']);
         $entry->set('title_bn', $validated['title_bn']);
-        $entry->set('title_en', $validated['title_en'] ?: $validated['title_bn']);
+        $entry->set('title_en', ($validated['title_en'] ?? null) ?: $validated['title_bn']);
         $entry->set('body_bn', $validated['body_bn']);
-        $entry->set('body_en', $validated['body_en'] ?: $validated['body_bn']);
+        $entry->set('body_en', ($validated['body_en'] ?? null) ?: $validated['body_bn']);
         if (! empty($validated['announcement_date'])) {
             $entry->set('announcement_date', $validated['announcement_date']);
+        }
+        if (! empty($validated['end_date'])) {
+            $entry->set('end_date', $validated['end_date']);
         }
         if ($request->has('is_active')) {
             $entry->set('is_active', $request->boolean('is_active'));
@@ -1721,6 +1807,85 @@ class DashboardController extends Controller
 
         $memberName = $targetUser->get('bangla_name') ?: $targetUser->get('name') ?: $targetUser->email();
         return back()->with('success', "সদস্য {$memberName}-এর নতুন পাসওয়ার্ড সফলভাবে সেট করা হয়েছে!");
+    }
+
+    /**
+     * Create Meeting Decision & Resolution (President & Secretary / Superadmin & Admin)
+     * Rule: Once created/approved, it cannot be modified or deleted.
+     */
+    public function createDecision(Request $request)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin'])) {
+            return back()->withErrors(['error' => 'শুধুমাত্র সভাপতি বা সাধারণ সম্পাদক সভার আনুষ্ঠানিক সিদ্ধান্ত/রেজুলেশন রেকর্ড করতে পারেন।']);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'meeting_date' => 'required|date',
+            'decision_number' => 'nullable|string|max:100',
+            'decision_text' => 'required|string',
+            'attendees' => 'nullable|string|max:500',
+            'document_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:20480',
+        ], [
+            'title.required' => 'মিটিংয়ের বিষয় বা সভার শিরোনাম প্রদান করুন।',
+            'meeting_date.required' => 'মিটিং অনুষ্ঠানের তারিখ প্রদান করুন।',
+            'decision_text.required' => 'সভায় গৃহীত সিদ্ধান্তসমূহের বিবরণ প্রদান করুন।',
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('document_file')) {
+            $file = $request->file('document_file');
+            if ($file && $file->isValid()) {
+                try {
+                    $targetDir = public_path('uploads/decisions');
+                    if (!is_dir($targetDir)) {
+                        @mkdir($targetDir, 0755, true);
+                    }
+                    $filename = 'resolution_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                    $file->move($targetDir, $filename);
+                    $filePath = '/uploads/decisions/' . $filename;
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Decision resolution upload failed: ' . $e->getMessage());
+                }
+            }
+        }
+
+        $recorderName = ($currentUser->get('bangla_name') ?: $currentUser->get('name')) . ' (' . $this->somitiService->getRoleTitle($userRole, 'bn') . ')';
+        $resNo = !empty($validated['decision_number']) ? $validated['decision_number'] : ('RES-' . date('Y') . '-' . rand(10, 99));
+        $slug = 'decision-' . Str::slug($validated['title']) . '-' . time();
+
+        $entry = Entry::make()
+            ->collection('decisions')
+            ->slug($slug)
+            ->data([
+                'title' => $validated['title'],
+                'meeting_date' => $validated['meeting_date'],
+                'date' => $validated['meeting_date'],
+                'decision_number' => $resNo,
+                'decision_text' => $validated['decision_text'],
+                'content' => $validated['decision_text'],
+                'attendees' => $validated['attendees'] ?: 'সকল সাধারণ সদস্যবৃন্দ',
+                'document_file' => $filePath,
+                'attachment' => $filePath,
+                'recorded_by' => $recorderName,
+                'recorded_by_email' => $currentUser->email(),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'recorded_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'status' => 'approved',
+                'is_approved' => true,
+                'is_locked' => true,
+            ]);
+
+        $entry->save();
+        $this->somitiService->clearCache();
+
+        return back()->with('success', 'মিটিংয়ের রেজুলেশন ও সিদ্ধান্ত সফলভাবে অনুমোদিত ও স্থায়ীভাবে সংরক্ষিত হয়েছে! আগামী ৩০ দিন এটি ওয়েবসাইটে সক্রিয় ঘোষণা হিসেবে প্রদর্শিত হবে।');
     }
 }
 

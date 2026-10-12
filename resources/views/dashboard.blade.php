@@ -89,6 +89,14 @@
                         <i class="fa-solid fa-scroll text-sm"></i>
                         <span>নতুন নোটিশ</span>
                     </button>
+
+                    <!-- Add Meeting Decision / Resolution -->
+                    @if($userRole === 'superadmin' || $userRole === 'admin')
+                    <button onclick="openDecisionModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-teal-700/90 hover:bg-teal-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-1.5 hover:scale-105 transition-all cursor-pointer text-center">
+                        <i class="fa-solid fa-handshake-angle text-sm"></i>
+                        <span>মিটিং সিদ্ধান্ত</span>
+                    </button>
+                    @endif
                 @endif
 
                 <!-- Profile Settings -->
@@ -378,10 +386,16 @@
                 </h3>
                 <p class="text-xs text-slate-400 font-bangla">ওয়েবসাইটে প্রদর্শিত সকল ধারা ও নিয়মাবলী যোগ, পরিবর্তন বা ডিলিট করুন</p>
             </div>
-            <button onclick="openAddRuleModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-gold to-amber-600 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg cursor-pointer">
-                <i class="fa-solid fa-plus"></i>
-                <span>নতুন ধারা যোগ করুন</span>
-            </button>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('rules.download') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 shadow transition hover:scale-105" title="১৬টি কার্যকর নীতিমালা ডাউনলোড ও প্রিন্ট">
+                    <i class="fa-solid fa-file-pdf text-amber-400"></i>
+                    <span>নীতিমালা ডাউনলোড (PDF)</span>
+                </a>
+                <button onclick="openAddRuleModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-gold to-amber-600 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg cursor-pointer">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>নতুন ধারা যোগ করুন</span>
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -474,10 +488,10 @@
                                 <button type="button" onclick="openResetPasswordModal('{{ $md['email'] }}', '{{ $md['bangla_name'] }}')" class="p-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold transition cursor-pointer" title="পাসওয়ার্ড রিসেট করুন (নতুন পাসওয়ার্ড নির্ধারণ)">
                                     <i class="fa-solid fa-key"></i>
                                 </button>
-                                @endif
-                                <button type="button" onclick="openEditMemberModal('{{ $md['email'] }}', '{{ $md['name'] }}', '{{ $md['bangla_name'] }}', '{{ $md['role'] }}')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="সদস্য তথ্য">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                <button type="button" onclick="openEditMemberModal('{{ $md['email'] }}', '{{ addslashes($md['name']) }}', '{{ addslashes($md['bangla_name']) }}', '{{ $md['role'] }}', '{{ addslashes($md['designation'] ?? '') }}', '{{ $md['phone'] ?? '' }}')" class="p-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold transition cursor-pointer" title="সদস্য তথ্য ও পদবী সম্পাদনা">
+                                    <i class="fa-solid fa-user-pen"></i>
                                 </button>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -727,6 +741,80 @@
     </div>
     @endif
 
+    <!-- 4.4. Meeting Decisions & Resolutions Section (Visible to All Logged-in Members) -->
+    <div class="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-emerald-500/30 shadow-2xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono">
+                        {{ count($decisions ?? []) }} টি রেজুলেশন
+                    </span>
+                    <h3 class="text-lg font-black text-white font-bangla flex items-center gap-2">
+                        <i class="fa-solid fa-handshake-angle text-emerald-400"></i>
+                        <span>মিটিংয়ের সিদ্ধান্ত ও রেজুলেশন খতিয়ান (Meeting Decisions & Resolutions)</span>
+                    </h3>
+                </div>
+                <p class="text-xs text-slate-400 font-bangla mt-1">
+                    বার্ষিক ও সাধারণ সভার সর্বসম্মত সিদ্ধান্ত ও রেজুলেশন। অনুমোদিত সিদ্ধান্তসমূহ অপরিবর্তনশীল ও আজীবন সংরক্ষিত থাকে।
+                </p>
+            </div>
+
+            @if($userRole === 'superadmin' || $userRole === 'admin')
+            <button onclick="openDecisionModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg hover:scale-105 transition-all cursor-pointer">
+                <i class="fa-solid fa-plus-circle"></i>
+                <span>নতুন মিটিং সিদ্ধান্ত যোগ</span>
+            </button>
+            @endif
+        </div>
+
+        @if(empty($decisions) || count($decisions) === 0)
+            <div class="py-12 text-center text-slate-500 text-xs font-bangla">
+                <i class="fa-solid fa-handshake-angle text-3xl mb-2 text-slate-600"></i>
+                <p>বর্তমানে কোনো আনুষ্ঠানিক মিটিং রেজুলেশন রেকর্ড করা হয়নি।</p>
+            </div>
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                @foreach($decisions as $dec)
+                <div class="p-5 rounded-2xl bg-slate-800/80 border border-emerald-500/30 flex flex-col justify-between space-y-4 shadow-xl">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                                {{ $dec['decision_number'] }}
+                            </span>
+                            <span class="text-[11px] text-slate-400 font-mono">
+                                <i class="fa-regular fa-calendar mr-1"></i>{{ $dec['meeting_date'] }}
+                            </span>
+                        </div>
+
+                        <h4 class="text-sm font-bold text-white font-bangla">{{ $dec['title'] }}</h4>
+                        
+                        <p class="text-xs text-slate-300 font-bangla leading-relaxed whitespace-pre-line bg-slate-900/60 p-3 rounded-xl border border-white/5">
+                            {{ $dec['decision_text'] }}
+                        </p>
+
+                        <div class="text-[11px] text-slate-400 font-bangla space-y-0.5 pt-1">
+                            <div><span class="text-slate-500">উপস্থিতি:</span> <span class="text-slate-300 font-medium">{{ $dec['attendees'] }}</span></div>
+                            <div><span class="text-slate-500">লিপিবদ্ধকারী:</span> <span class="text-emerald-400 font-medium">{{ $dec['recorded_by'] }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-slate-900 text-amber-300 border border-amber-500/30">
+                            <i class="fa-solid fa-lock text-[9px]"></i> অনুমোদিত ও স্থায়ী (অপরিবর্তনশীল)
+                        </span>
+
+                        @if(!empty($dec['document_file']))
+                        <a href="{{ $dec['document_file'] }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-pdf"></i> নথি দেখুন
+                        </a>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
     <!-- 4.5. Expenses & Vouchers Ledger Section -->
     <div class="p-6 rounded-3xl bg-slate-900 border border-white/10 shadow-2xl space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
@@ -949,15 +1037,27 @@
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
+                <!-- Members Payment & Due Summary PDF (Available to ALL members) -->
+                <a href="{{ route('ledger.members_summary') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 shadow transition hover:scale-105" title="সকল সদস্যের মোট পরিশোধ ও বকেয়া হিসাব ডাউনলোড">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-400"></i>
+                    <span>সদস্যদের হিসাব বিবরণী (PDF)</span>
+                </a>
+
+                <!-- Complete Financial Audit Statement PDF (Available to ALL members) -->
+                <a href="{{ route('finance.full_audit') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-slate-800 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 shadow transition hover:scale-105" title="খরচ, মুনাফা, সদস্য জমা ও নীট তহবিল অডিট রিপোর্ট">
+                    <i class="fa-solid fa-scale-balanced text-amber-400"></i>
+                    <span>পূর্ণাঙ্গ আর্থিক অডিট (PDF)</span>
+                </a>
+
                 @if($userRole === 'superadmin' || $userRole === 'admin' || $userRole === 'cashier')
                     <!-- Printable Due Report -->
                     <a href="{{ route('ledger.due_report') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 shadow">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <i class="fa-solid fa-clipboard-check"></i>
                         <span>বকেয়া অডিট</span>
                     </a>
 
                     <!-- Print Ledger -->
-                    <a href="{{ route('ledger.export') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 shadow">
+                    <a href="{{ route('ledger.export') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-500/30 text-xs font-bold flex items-center gap-1.5 shadow">
                         <i class="fa-solid fa-print"></i>
                         <span>লেজার প্রিন্ট</span>
                     </a>
@@ -1912,9 +2012,16 @@
                 <input type="text" name="title_en" placeholder="e.g. Annual General Meeting & Fund Proclamation" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans">
             </div>
 
-            <div>
-                <label class="block font-bold text-slate-300 mb-1">জারি তারিখ / Timeline Date</label>
-                <input type="date" name="announcement_date" value="{{ date('Y-m-d') }}" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">জারি তারিখ / Timeline Date</label>
+                    <input type="date" name="announcement_date" value="{{ date('Y-m-d') }}" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">প্রদর্শনের শেষ তারিখ (End Date) *</label>
+                    <input type="date" name="end_date" value="{{ date('Y-m-d', strtotime('+30 days')) }}" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-amber-400">
+                    <span class="text-[10px] text-amber-300/80 block mt-0.5">এই তারিখের পর ওয়েবসাইটে প্রদর্শিত হবে না</span>
+                </div>
             </div>
 
             <div>
@@ -1991,9 +2098,15 @@
                 <input type="text" id="edit_ann_title_en" name="title_en" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans">
             </div>
 
-            <div>
-                <label class="block font-bold text-slate-300 mb-1">জারি তারিখ</label>
-                <input type="date" id="edit_ann_date" name="announcement_date" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">জারি তারিখ</label>
+                    <input type="date" id="edit_ann_date" name="announcement_date" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">প্রদর্শনের শেষ তারিখ</label>
+                    <input type="date" id="edit_ann_end_date" name="end_date" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-amber-400">
+                </div>
             </div>
 
             <div>
@@ -2336,6 +2449,138 @@
     </div>
 </div>
 
+<!-- Edit Member Details Modal (President/Superadmin Only) -->
+<div id="editMemberModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto animate-float">
+        <button onclick="closeModal('editMemberModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-4">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-amber-400"></i>
+                <span>সদস্য তথ্য ও পদবী সম্পাদনা</span>
+            </h3>
+            <p id="edit_member_email_display" class="text-xs text-amber-300 font-mono mt-1"></p>
+        </div>
+
+        <form id="editMemberForm" method="POST" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">নাম (English) *</label>
+                    <input type="text" id="edit_member_name" name="name" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">নাম (বাংলা)</label>
+                    <input type="text" id="edit_member_bangla_name" name="bangla_name" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white focus:border-amber-400">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">মোবাইল নম্বর</label>
+                    <input type="text" id="edit_member_phone" name="phone" placeholder="017xxxxxxxx" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">পদবী (Designation)</label>
+                    <input type="text" id="edit_member_designation" name="designation" placeholder="e.g. সভাপতি / ক্যাশিয়ার" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white focus:border-amber-400">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">সিস্টেম রোল (Role / Permission) *</label>
+                <select id="edit_member_role" name="role" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-bold focus:border-amber-400">
+                    <option value="superadmin">সভাপতি (Super Admin - All Access)</option>
+                    <option value="admin">সাধারণ সম্পাদক (Admin)</option>
+                    <option value="cashier">ক্যাশিয়ার (Cashier & Ledger)</option>
+                    <option value="member">কার্যনির্বাহী সদস্য (Member)</option>
+                </select>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <label class="block font-bold text-slate-300">পাসওয়ার্ড পরিবর্তন (ঐচ্ছিক)</label>
+                <input type="password" id="edit_member_password" name="new_password" minlength="6" placeholder="পরিবর্তন না করতে চাইলে ফাঁকা রাখুন" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-amber-400">
+                <span class="text-[10px] text-slate-400 block">নতুন পাসওয়ার্ড সর্বনিম্ন ৬ অক্ষরের হতে হবে।</span>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="edit_member_is_active" name="is_active" value="1" checked class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-800 border-white/20">
+                <label for="edit_member_is_active" class="text-slate-300 font-bold cursor-pointer">সদস্য অ্যাকাউন্ট সক্রিয় (Active)</label>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-xl transition-all cursor-pointer">
+                <i class="fa-solid fa-floppy-disk mr-1"></i> সদস্য তথ্য হালনাগাদ সংরক্ষণ করুন
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Meeting Decision & Resolution Modal (President, Secretary, Superadmin Only) -->
+<div id="decisionModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-blue-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto animate-float">
+        <button onclick="closeModal('decisionModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-4">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-handshake-angle text-blue-400"></i>
+                <span>মিটিং সিদ্ধান্ত ও রেজুলেশন অনুমোদন</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-bangla mt-1">
+                বার্ষিক/ত্রৈমাসিক মিটিংয়ে গৃহীত সর্বসম্মত সিদ্ধান্তসমূহ স্থায়ী খতিয়ানে যুক্ত করুন।
+            </p>
+        </div>
+
+        <form action="{{ route('decision.create') }}" method="POST" enctype="multipart/form-data" onsubmit="showPreloader('রেজুলেশন রেকর্ড হচ্ছে...', 'উপলব্ধি সমবায় সমিতি')" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+            
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">সিদ্ধান্ত / রেজুলেশনের শিরোনাম *</label>
+                <input type="text" name="title" required placeholder="যেমন: ৩য় বার্ষিক সাধারণ সভার সিদ্ধান্ত ও নতুন নীতিমালা অনুমোদন" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white focus:border-blue-500">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">মিটিংয়ের তারিখ *</label>
+                    <input type="date" name="meeting_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">রেজুলেশন / মেমো নং (ঐচ্ছিক)</label>
+                    <input type="text" name="decision_number" placeholder="যেমন: RES-{{ date('Y') }}-{{ rand(10,99) }}" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">উপস্থিত সদস্যবৃন্দ ও সভাপতি (ঐচ্ছিক)</label>
+                <input type="text" name="attendees" placeholder="যেমন: সভাপতি সজিব, সম্পাদক কাওসার, ক্যাশিয়ার রুবেল সহ সকল ৬ সদস্য" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">গৃহীত সিদ্ধান্ত ও রেজুলেশন বিবরণ *</label>
+                <textarea name="decision_text" rows="5" required placeholder="মিটিংয়ে গৃহীত পুঙ্খানুপুঙ্খ সিদ্ধান্ত ও শর্তাবলি লিখুন..." class="w-full min-h-[120px] px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white leading-relaxed focus:border-blue-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">স্বাক্ষরিত রেজুলেশন কপি / কার্যবিবরণী ছবি বা PDF (ঐচ্ছিক)</label>
+                <input type="file" name="document_file" accept="image/*,.pdf" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                <span class="text-[10px] text-slate-500 block mt-1">স্বাক্ষরিত কার্যবিবরণীর স্ক্যান কপি বা ছবি আপলোড করতে পারেন</span>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px] leading-relaxed">
+                <i class="fa-solid fa-lock text-amber-400 mr-1"></i>
+                <strong>স্থায়ী ও অপরিবর্তনশীল নীতি:</strong> অনুমোদনের পর এই রেজুলেশন আর কোনোভাবেই এডিট বা ডিলিট করা সম্ভব নয়। এটি পরবর্তী <strong>৩০ দিন</strong> পাবলিক ওয়েবসাইটে জরুরি ঘোষণা হিসেবে এবং সদস্যদের ড্যাশবোর্ডে স্থায়ীভাবে প্রদর্শিত হবে।
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs shadow-xl transition-all cursor-pointer">
+                <i class="fa-solid fa-shield-halved mr-1"></i> রেজুলেশন চূড়ান্ত অনুমোদন ও প্রকাশ করুন
+            </button>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 
@@ -2437,6 +2682,10 @@
         openModalDirect('profitModal');
     }
 
+    function openDecisionModal() {
+        openModalDirect('decisionModal');
+    }
+
     function openResetPasswordModal(email, name) {
         const form = document.getElementById('adminResetPasswordForm');
         if (form) {
@@ -2447,6 +2696,36 @@
             info.innerText = `সদস্য: ${name} (${email})`;
         }
         openModalDirect('adminResetPasswordModal');
+    }
+
+    function openEditMemberModal(email, name, banglaName, role, designation, phone) {
+        const form = document.getElementById('editMemberForm');
+        if (form) {
+            form.action = `/member/update/${encodeURIComponent(email)}`;
+        }
+        const info = document.getElementById('edit_member_email_display');
+        if (info) {
+            info.innerText = `ইমেইল: ${email}`;
+        }
+        const nameInput = document.getElementById('edit_member_name');
+        if (nameInput) nameInput.value = name || '';
+
+        const bnNameInput = document.getElementById('edit_member_bangla_name');
+        if (bnNameInput) bnNameInput.value = banglaName || '';
+
+        const roleInput = document.getElementById('edit_member_role');
+        if (roleInput) roleInput.value = role || 'member';
+
+        const desigInput = document.getElementById('edit_member_designation');
+        if (desigInput) desigInput.value = designation || '';
+
+        const phoneInput = document.getElementById('edit_member_phone');
+        if (phoneInput) phoneInput.value = phone || '';
+
+        const passInput = document.getElementById('edit_member_password');
+        if (passInput) passInput.value = '';
+
+        openModalDirect('editMemberModal');
     }
 
     function toggleSpecialFundFields(checked) {
@@ -2626,7 +2905,7 @@
         }
     }
 
-    function openEditAnnouncementModal(id, titleBn, titleEn, bodyBn, bodyEn, date) {
+    function openEditAnnouncementModal(id, titleBn, titleEn, bodyBn, bodyEn, date, endDate) {
         const form = document.getElementById('editAnnouncementForm');
         form.action = `/announcement/update/${id}`;
         document.getElementById('edit_ann_title_bn').value = titleBn;
@@ -2634,6 +2913,9 @@
         document.getElementById('edit_ann_body_bn').value = bodyBn;
         document.getElementById('edit_ann_body_en').value = bodyEn;
         document.getElementById('edit_ann_date').value = date;
+        if (document.getElementById('edit_ann_end_date')) {
+            document.getElementById('edit_ann_end_date').value = endDate || '';
+        }
 
         const m = document.getElementById('editAnnouncementModal');
         if (m) {
@@ -2699,6 +2981,9 @@
             document.getElementById('edit_ann_body_bn').value = ann.body_bn || '';
             document.getElementById('edit_ann_body_en').value = ann.body_en || '';
             document.getElementById('edit_ann_date').value = ann.announcement_date || '';
+            if (document.getElementById('edit_ann_end_date')) {
+                document.getElementById('edit_ann_end_date').value = ann.end_date || '';
+            }
 
             const m = document.getElementById('editAnnouncementModal');
             if (m) {

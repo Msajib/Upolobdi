@@ -30,6 +30,7 @@ class HomeController extends Controller
         $recentPayments = array_slice($this->somitiService->getPayments(), 0, 10);
         $projects = $this->somitiService->getProjects();
         $announcements = $this->somitiService->getAnnouncements();
+        $activeDecisions = $this->somitiService->getActiveDecisions(30);
 
         $currentUser = Auth::user();
         $userDue = null;
@@ -53,7 +54,8 @@ class HomeController extends Controller
             'recentPayments',
             'currentUser',
             'userDue',
-            'announcements'
+            'announcements',
+            'activeDecisions'
         ));
     }
 }
