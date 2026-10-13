@@ -569,7 +569,7 @@
                 <h3 class="text-lg font-black text-white font-bangla">সমিতি ইভেন্ট ও ফটো গল্প প্রকাশনা</h3>
                 <p class="text-xs text-slate-400 font-bangla">সমিতির ভ্রমণ, সভা ও কার্যক্রমের ছবি আপলোড ও হাইলাইট করুন</p>
             </div>
-            <button onclick="openAddEventModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg">
+            <button type="button" onclick="openAddEventModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition hover:scale-105 cursor-pointer">
                 <i class="fa-solid fa-camera"></i>
                 <span>নতুন ইভেন্ট যোগ</span>
             </button>
@@ -760,7 +760,7 @@
             </div>
 
             @if($userRole === 'superadmin' || $userRole === 'admin')
-            <button onclick="openDecisionModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg hover:scale-105 transition-all cursor-pointer">
+            <button type="button" onclick="openDecisionModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg hover:scale-105 transition-all cursor-pointer">
                 <i class="fa-solid fa-plus-circle"></i>
                 <span>নতুন মিটিং সিদ্ধান্ত যোগ</span>
             </button>
@@ -800,14 +800,25 @@
 
                     <div class="pt-3 border-t border-white/10 flex items-center justify-between">
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-slate-900 text-amber-300 border border-amber-500/30">
-                            <i class="fa-solid fa-lock text-[9px]"></i> অনুমোদিত ও স্থায়ী (অপরিবর্তনশীল)
+                            <i class="fa-solid fa-lock text-[9px]"></i> অনুমোদিত ও সংরক্ষিত
                         </span>
 
-                        @if(!empty($dec['document_file']))
-                        <a href="{{ $dec['document_file'] }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-file-pdf"></i> নথি দেখুন
-                        </a>
-                        @endif
+                        <div class="flex items-center gap-2">
+                            @if(!empty($dec['document_file']))
+                            <a href="{{ $dec['document_file'] }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-solid fa-file-pdf"></i> নথি দেখুন
+                            </a>
+                            @endif
+
+                            @if($userRole === 'superadmin' || $userRole === 'admin')
+                            <form action="{{ route('decision.delete', $dec['id']) }}" method="POST" onsubmit="return confirm('আপনি কি নিশ্চিত যে এই রেজুলেশনটি মুছে ফেলতে চান?')">
+                                @csrf
+                                <button type="submit" class="p-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-xs transition cursor-pointer" title="রেজুলেশন মুছে ফেলুন">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -2581,6 +2592,86 @@
     </div>
 </div>
 
+<!-- Add Event & Activity Modal (President/Admin/Superadmin) -->
+<div id="addEventModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto animate-float">
+        <button type="button" onclick="closeModal('addEventModal')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-4">
+            <h3 class="text-xl font-black text-white font-bangla flex items-center gap-2">
+                <i class="fa-solid fa-camera text-emerald-400"></i>
+                <span>নতুন ইভেন্ট ও ফটো গল্প প্রকাশনা</span>
+            </h3>
+            <p class="text-xs text-slate-400 font-bangla mt-1">
+                সমিতির ভ্রমণ, সভা বা যেকোনো সামাজিক কার্যক্রমের ছবি আপলোড ও বিস্তারিত প্রকাশ করুন।
+            </p>
+        </div>
+
+        <form action="{{ route('event.create') }}" method="POST" enctype="multipart/form-data" onsubmit="showPreloader('ইভেন্ট ও ছবি আপলোড হচ্ছে...', 'উপলব্ধি সমবায় সমিতি')" class="space-y-3.5 text-xs font-bangla">
+            @csrf
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">ইভেন্টের শিরোনাম (বাংলা) *</label>
+                <input type="text" name="title_bn" required placeholder="যেমন: ৫ম বার্ষিক সাধারণ সভা ও ফ্যামিলি ডে ২০২৬" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">Title (English - Optional)</label>
+                <input type="text" name="title" placeholder="e.g. 5th Annual General Meeting & Family Day" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans focus:border-emerald-500">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">অনুষ্ঠানের তারিখ *</label>
+                    <input type="date" name="event_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-mono focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">স্থান (Location)</label>
+                    <input type="text" name="location" value="ঢাকা, বাংলাদেশ" placeholder="যেমন: ঢাকা, বাংলাদেশ" class="w-full px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white focus:border-emerald-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">ইভেন্টের বিবরণ (বাংলা)</label>
+                <textarea name="description_bn" rows="3" placeholder="ইভেন্টের বিস্তারিত কার্যক্রম, অংশগ্রহণকারী ও স্মৃতিচারণ..." class="w-full min-h-[80px] px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white leading-relaxed focus:border-emerald-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">Description (English - Optional)</label>
+                <textarea name="description" rows="2" placeholder="Event description in English..." class="w-full min-h-[60px] px-3.5 py-2.5 bg-slate-800 border border-white/15 rounded-xl text-white font-sans leading-relaxed focus:border-emerald-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">কভার ছবি (Cover Photo - JPG/PNG/WebP, max 10MB) *</label>
+                <input type="file" name="image_file" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+                <span class="text-[10px] text-slate-500 block mt-1">কার্ড এবং ব্যানার হিসেবে প্রদর্শিত হবে</span>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-300 mb-1">আরও ছবি / গ্যালারি ছবিসমূহ (ঐচ্ছিক - একাধিক ছবি নির্বাচন করতে পারেন)</label>
+                <input type="file" name="gallery_files[]" multiple accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600 cursor-pointer">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/80 border border-white/10 cursor-pointer">
+                    <input type="checkbox" name="is_highlighted" value="1" checked class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 bg-slate-900 border-white/20">
+                    <span class="text-xs text-white font-bold">🌟 হাইলাইটস সেকশন</span>
+                </label>
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/80 border border-white/10 cursor-pointer">
+                    <input type="checkbox" name="is_masonry_selected" value="1" checked class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 bg-slate-900 border-white/20">
+                    <span class="text-xs text-white font-bold">🖼 মেসনারি গ্যালারি</span>
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs shadow-xl transition-all cursor-pointer mt-2">
+                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> ইভেন্ট ও ফটো অ্যালবাম প্রকাশ করুন
+            </button>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 
@@ -2653,18 +2744,23 @@
             setTimeout(() => {
                 m.classList.add('hidden');
                 m.classList.remove('flex');
+                m.style.display = 'none';
                 inner.style.transform = '';
                 inner.style.opacity = '';
             }, 380);
         } else {
             m.classList.add('hidden');
             m.classList.remove('flex');
+            m.style.display = 'none';
         }
     }
 
     function openModalDirect(id) {
         const m = document.getElementById(id);
-        if (!m) return;
+        if (!m) {
+            console.warn('Modal not found: ' + id);
+            return;
+        }
         const inner = m.firstElementChild || m.querySelector('div');
         if (inner) {
             inner.style.transform = '';
@@ -2672,6 +2768,11 @@
         }
         m.classList.remove('hidden');
         m.classList.add('flex');
+        m.style.display = 'flex';
+    }
+
+    function openAddEventModal() {
+        openModalDirect('addEventModal');
     }
 
     function openExpenseModal() {
@@ -2807,11 +2908,7 @@
     }
 
     function openAddProjectModal() {
-        const m = document.getElementById('addProjectModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-        }
+        openModalDirect('addProjectModal');
     }
 
     function openEditProjectModal(id, title, titleBn, status, targetAmount, timeline, location, image, desc, descBn) {
@@ -2835,11 +2932,7 @@
     }
 
     function openAddRuleModal() {
-        const m = document.getElementById('addRuleModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-        }
+        openModalDirect('addRuleModal');
     }
 
     function openEditRuleModal(id, titleBn, titleEn, ruleNumber, order, descBn, descEn) {
@@ -2898,11 +2991,7 @@
     }
 
     function openAddAnnouncementModal() {
-        const m = document.getElementById('addAnnouncementModal');
-        if (m) {
-            m.classList.remove('hidden');
-            m.classList.add('flex');
-        }
+        openModalDirect('addAnnouncementModal');
     }
 
     function openEditAnnouncementModal(id, titleBn, titleEn, bodyBn, bodyEn, date, endDate) {

@@ -1211,28 +1211,32 @@ class DashboardController extends Controller
     public function createEvent(Request $request)
     {
         $currentUser = Auth::user();
-        $isSuper = $currentUser->isSuper() || $currentUser->hasRole('superadmin');
-        $isAdmin = $currentUser->hasRole('admin');
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        $isSuper = $currentUser->isSuper() || $currentUser->hasRole('superadmin') || $userRole === 'superadmin';
+        $isAdmin = $currentUser->hasRole('admin') || $userRole === 'admin';
 
         if (! $isSuper && ! $isAdmin) {
             return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (Admin Only)']);
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:200',
             'title_bn' => 'required|string|max:200',
+            'title' => 'nullable|string|max:200',
             'event_date' => 'required|date',
-            'location' => 'required|string|max:150',
-            'description' => 'nullable|string|max:1000',
-            'description_bn' => 'nullable|string|max:1000',
-            'is_highlighted' => 'nullable|boolean',
+            'location' => 'nullable|string|max:150',
+            'description' => 'nullable|string|max:2000',
+            'description_bn' => 'nullable|string|max:2000',
+            'is_highlighted' => 'nullable',
+            'is_masonry_selected' => 'nullable',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
             'gallery_files.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ], [
-            'title.required' => 'ইভেন্টের ইংরেজি নাম দিন।',
             'title_bn.required' => 'ইভেন্টের বাংলা নাম দিন।',
             'event_date.required' => 'ইভেন্টের তারিখ নির্বাচন করুন।',
-            'location.required' => 'ইভেন্টের স্থান দিন।',
             'image_file.image' => 'ইভেন্টের কভার ছবি অবশ্যই ছবি ফাইল হতে হবে।',
             'image_file.mimes' => 'ছবির ফরম্যাট JPG, PNG, WebP বা GIF হতে হবে।',
             'image_file.max' => 'ছবির সাইজ সর্বোচ্চ ১০ মেগাবাইট (10MB) হতে পারে।',
@@ -1240,22 +1244,35 @@ class DashboardController extends Controller
             'gallery_files.*.max' => 'গ্যালারির প্রতিটি ছবির সাইজ সর্বোচ্চ ১০ মেগাবাইট (10MB) হতে পারে।',
         ]);
 
+        $titleBn = $validated['title_bn'];
+        $titleEn = !empty($validated['title']) ? $validated['title'] : $titleBn;
+        $location = !empty($validated['location']) ? $validated['location'] : 'ঢাকা, বাংলাদেশ';
+
+        $targetDir = public_path('uploads/events');
+        if (! file_exists($targetDir)) {
+            @mkdir($targetDir, 0755, true);
+        }
+
         $imagePath = '/assets/images/events/annual_meetup.jpg';
         $galleryImages = [];
 
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
-            $filename = 'event_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/events'), $filename);
-            $imagePath = '/uploads/events/' . $filename;
-            $galleryImages[] = $imagePath;
+            if ($file && $file->isValid()) {
+                $filename = 'event_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+                $file->move($targetDir, $filename);
+                $imagePath = '/uploads/events/' . $filename;
+                $galleryImages[] = $imagePath;
+            }
         }
 
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $gFile) {
-                $gName = 'event_g_' . time() . '_' . Str::random(5) . '.' . $gFile->getClientOriginalExtension();
-                $gFile->move(public_path('uploads/events'), $gName);
-                $galleryImages[] = '/uploads/events/' . $gName;
+                if ($gFile && $gFile->isValid()) {
+                    $gName = 'event_g_' . time() . '_' . Str::random(6) . '.' . $gFile->getClientOriginalExtension();
+                    $gFile->move($targetDir, $gName);
+                    $galleryImages[] = '/uploads/events/' . $gName;
+                }
             }
         }
 
@@ -1263,18 +1280,19 @@ class DashboardController extends Controller
             $galleryImages = [$imagePath];
         }
 
-        $slug = 'event-' . Str::slug($validated['title']) . '-' . time();
+        $slug = 'event-' . Str::slug($titleEn) . '-' . time();
 
         $entry = Entry::make()
             ->collection('events')
             ->slug($slug)
             ->data([
-                'title' => $validated['title'],
-                'title_bn' => $validated['title_bn'],
+                'title' => $titleEn,
+                'title_bn' => $titleBn,
                 'event_date' => $validated['event_date'],
-                'location' => $validated['location'],
+                'location' => $location,
                 'image' => $imagePath,
                 'is_highlighted' => $request->boolean('is_highlighted', true),
+                'is_masonry_selected' => $request->boolean('is_masonry_selected', true),
                 'gallery_images' => $galleryImages,
                 'description' => $validated['description'] ?? '',
                 'description_bn' => $validated['description_bn'] ?? '',
@@ -1283,14 +1301,19 @@ class DashboardController extends Controller
         $entry->save();
         $this->somitiService->clearCache();
 
-        return back()->with('success', 'নতুন ইভেন্ট/কার্যক্রম সফলভাবে প্রকাশ করা হয়েছে! (Event published)');
+        return back()->with('success', 'নতুন ইভেন্ট ও ফটো গল্প সফলভাবে প্রকাশ করা হয়েছে! (Event published)');
     }
 
     public function deleteEvent($id)
     {
         $currentUser = Auth::user();
-        $isSuper = $currentUser->isSuper() || $currentUser->hasRole('superadmin');
-        $isAdmin = $currentUser->hasRole('admin');
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        $isSuper = $currentUser->isSuper() || $currentUser->hasRole('superadmin') || $userRole === 'superadmin';
+        $isAdmin = $currentUser->hasRole('admin') || $userRole === 'admin';
 
         if (! $isSuper && ! $isAdmin) {
             return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (Admin Only)']);
@@ -1298,6 +1321,10 @@ class DashboardController extends Controller
 
         $entry = Entry::find($id);
         if ($entry) {
+            $img = $entry->get('image');
+            if ($img && str_starts_with($img, '/uploads/events/')) {
+                @unlink(public_path(ltrim($img, '/')));
+            }
             $entry->delete();
             $this->somitiService->clearCache();
         }
@@ -1886,6 +1913,34 @@ class DashboardController extends Controller
         $this->somitiService->clearCache();
 
         return back()->with('success', 'মিটিংয়ের রেজুলেশন ও সিদ্ধান্ত সফলভাবে অনুমোদিত ও স্থায়ীভাবে সংরক্ষিত হয়েছে! আগামী ৩০ দিন এটি ওয়েবসাইটে সক্রিয় ঘোষণা হিসেবে প্রদর্শিত হবে।');
+    }
+
+    /**
+     * Delete Meeting Decision (President / Superadmin / Secretary Only)
+     */
+    public function deleteDecision($id)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser) {
+            return redirect()->route('home');
+        }
+
+        $userRole = $this->somitiService->getUserRole($currentUser);
+        if (! in_array($userRole, ['superadmin', 'admin'])) {
+            return back()->withErrors(['error' => 'অননুমোদিত এক্সেস (President / Secretary Only)']);
+        }
+
+        $entry = Entry::find($id);
+        if ($entry) {
+            $doc = $entry->get('document_file') ?: $entry->get('attachment');
+            if ($doc && str_starts_with($doc, '/uploads/decisions/')) {
+                @unlink(public_path(ltrim($doc, '/')));
+            }
+            $entry->delete();
+            $this->somitiService->clearCache();
+        }
+
+        return back()->with('info', 'মিটিং রেজুলেশন সফলভাবে মুছে ফেলা হয়েছে! (Decision Deleted)');
     }
 }
 

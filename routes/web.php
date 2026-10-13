@@ -60,8 +60,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profit/create', [DashboardController::class, 'createProfit'])->name('profit.create');
     Route::post('/profit/delete/{id}', [DashboardController::class, 'deleteProfit'])->name('profit.delete');
 
-    // Meeting Decisions (President & Secretary & Superadmin) - Immutable Once Approved
+    // Meeting Decisions (President & Secretary & Superadmin)
     Route::post('/decision/create', [DashboardController::class, 'createDecision'])->name('decision.create');
+    Route::post('/decision/delete/{id}', [DashboardController::class, 'deleteDecision'])->name('decision.delete');
 
     // Due Exemption (Cashier max 6 mo, Superadmin max 12 mo)
     Route::post('/member/exemption/{userId}', [DashboardController::class, 'grantExemption'])->name('member.exemption');

@@ -354,5 +354,82 @@ class DashboardTest extends TestCase
         $response->assertSee('সমন্বিত আর্থিক অডিট');
         $response->assertSee('সমিতির নীট বর্তমান তহবিল');
     }
+
+    public function test_president_can_create_and_delete_event_with_image(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $president = User::findByEmail('sajib@upolobdi.org');
+
+        $image = \Illuminate\Http\UploadedFile::fake()->image('event_test.jpg', 600, 400);
+
+        $response = $this->actingAs($president)->post('/event/create', [
+            'title_bn' => 'বার্ষিক মিলনমেলা ও ফ্যামিলি ডে ২০২৬',
+            'title' => 'Annual Meetup and Family Day 2026',
+            'event_date' => '2026-11-20',
+            'location' => 'গাজীপুর রিসোর্ট, ঢাকা',
+            'description_bn' => 'সমিতির বার্ষিক সাধারণ সভা ও পিকনিক অনুষ্ঠিত হবে।',
+            'is_highlighted' => '1',
+            'is_masonry_selected' => '1',
+            'image_file' => $image,
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        $eventEntry = Entry::query()->where('collection', 'events')->where('title_bn', 'বার্ষিক মিলনমেলা ও ফ্যামিলি ডে ২০২৬')->first();
+        $this->assertNotNull($eventEntry);
+        $this->assertStringContainsString('/uploads/events/', $eventEntry->get('image'));
+
+        // Delete event
+        $delResponse = $this->actingAs($president)->post("/event/delete/{$eventEntry->id()}");
+        $delResponse->assertStatus(302);
+        $delResponse->assertSessionHas('info');
+
+        $deleted = Entry::find($eventEntry->id());
+        $this->assertNull($deleted);
+    }
+
+    public function test_president_can_create_and_delete_meeting_decision(): void
+    {
+        $president = User::findByEmail('sajib@upolobdi.org');
+
+        $response = $this->actingAs($president)->post('/decision/create', [
+            'title' => 'বিশেষ সাধারণ সভার সিদ্ধান্ত - নতুন বিনিয়োগ প্রকল্প অনুমোদন',
+            'meeting_date' => '2026-10-15',
+            'decision_number' => 'RES-2026-TEST-99',
+            'attendees' => 'সভাপতি সজিব সহ সকল ৬ জন সদস্য',
+            'decision_text' => 'সভায় সর্বসম্মতিক্রমে নতুন প্রকল্প বাস্তবায়নের অনুমোদন দেওয়া হল।',
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        $decEntry = Entry::query()->where('collection', 'decisions')->where('decision_number', 'RES-2026-TEST-99')->first();
+        $this->assertNotNull($decEntry);
+
+        // Delete decision
+        $delResponse = $this->actingAs($president)->post("/decision/delete/{$decEntry->id()}");
+        $delResponse->assertStatus(302);
+        $delResponse->assertSessionHas('info');
+
+        $deleted = Entry::find($decEntry->id());
+        $this->assertNull($deleted);
+    }
+
+    public function test_dashboard_renders_all_modals_and_js_for_president(): void
+    {
+        $president = User::findByEmail('sajib@upolobdi.org');
+        $response = $this->actingAs($president)->get('/dashboard');
+        $response->assertStatus(200);
+
+        // Verify buttons and modals are present
+        $response->assertSee('id="addEventModal"', false);
+        $response->assertSee('id="decisionModal"', false);
+        $response->assertSee('id="expenseModal"', false);
+        $response->assertSee('id="profitModal"', false);
+        $response->assertSee('id="editMemberModal"', false);
+        $response->assertSee('openAddEventModal', false);
+        $response->assertSee('openDecisionModal', false);
+        $response->assertSee('openExpenseModal', false);
+        $response->assertSee('openProfitModal', false);
+    }
 }
 

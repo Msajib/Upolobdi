@@ -115,11 +115,11 @@ class SomitiService
         $rawRoles = (array) ($user->get('roles') ?? []);
         $designation = strtolower($user->get('designation') ?? '');
 
-        if ($user->isSuper() || in_array('superadmin', $roles) || in_array('superadmin', $rawRoles) || str_contains($email, 'sajib@') || (str_contains($designation, 'president') && !str_contains($designation, 'vice'))) {
+        if ($user->isSuper() || in_array('superadmin', $roles) || in_array('superadmin', $rawRoles) || in_array('president', $roles) || in_array('president', $rawRoles) || str_contains($email, 'sajib@') || (str_contains($designation, 'president') && !str_contains($designation, 'vice')) || (str_contains($designation, 'সভাপতি') && !str_contains($designation, 'সহ'))) {
             return 'superadmin';
         }
 
-        if (in_array('admin', $roles) || in_array('admin', $rawRoles) || str_contains($email, 'kawser@') || str_contains($designation, 'secretary') || str_contains($designation, 'সম্পাদক') || str_contains($designation, 'vice president') || str_contains($designation, 'সহ-সভাপতি')) {
+        if (in_array('admin', $roles) || in_array('admin', $rawRoles) || in_array('secretary', $roles) || in_array('secretary', $rawRoles) || in_array('vice_secretary', $roles) || in_array('vice_secretary', $rawRoles) || str_contains($email, 'kawser@') || str_contains($designation, 'secretary') || str_contains($designation, 'সম্পাদক') || str_contains($designation, 'vice president') || str_contains($designation, 'সহ-সভাপতি')) {
             return 'admin';
         }
 
