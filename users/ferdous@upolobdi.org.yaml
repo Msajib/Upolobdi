@@ -10,4 +10,4 @@ is_active: true
 roles:
   - member
 id: f1a6697b-cf10-449e-af54-ee09825b2069
-password_hash: $2y$04$9Kpf36ImUTKl2fs2aa227uVTuLPdHzuvPpXiHbllyi4Lcd1GWnkdK
+password_hash: $2y$04$T18aKDQt//yuJrOSjjX1L.hKBPZTHcLvuIPujVHtreJaB7LP8R6CG

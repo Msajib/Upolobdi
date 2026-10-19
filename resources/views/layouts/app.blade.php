@@ -416,7 +416,7 @@
         </button>
 
         <div class="relative z-10 max-w-5xl max-h-[85vh] flex flex-col items-center justify-center">
-            <img id="lightboxImg" src="" alt="Full View" class="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/20">
+            <img id="lightboxImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Full View" class="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/20">
             <div class="mt-4 text-center bg-slate-950/80 px-6 py-2 rounded-2xl border border-white/10 backdrop-blur-md">
                 <h4 id="lightboxTitle" class="text-base font-bold text-white font-bangla"></h4>
                 <p id="lightboxCounter" class="text-xs text-brand-gold font-mono mt-0.5"></p>

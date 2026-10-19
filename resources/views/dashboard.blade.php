@@ -1385,7 +1385,7 @@
                 <input type="file" name="proof_image" accept="image/*,.pdf" onchange="previewPaymentProof(this, 'member_proof_preview', 'member_proof_container')" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-gold file:text-slate-950 hover:file:bg-amber-400 cursor-pointer">
                 <span class="text-[10px] text-slate-400 block mt-1">স্ক্রিনশট বা ব্যাংক ডিপোজিট স্লিপ থাকলে যুক্ত করুন (JPG, PNG, WebP, PDF)</span>
                 <div id="member_proof_container" class="hidden mt-2 p-2 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center max-h-36 overflow-hidden">
-                    <img id="member_proof_preview" src="" alt="Proof Preview" class="max-h-32 object-contain rounded-lg">
+                    <img id="member_proof_preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Proof Preview" class="max-h-32 object-contain rounded-lg">
                 </div>
             </div>
 
@@ -1513,7 +1513,7 @@
                 <label class="block font-bold text-slate-300 mb-1">প্রমাণপত্র / স্লিপ ছবি (ঐচ্ছিক / Optional)</label>
                 <input type="file" name="proof_image" accept="image/*,.pdf" onchange="previewPaymentProof(this, 'direct_proof_preview', 'direct_proof_container')" class="w-full text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-500 cursor-pointer">
                 <div id="direct_proof_container" class="hidden mt-2 p-2 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center max-h-36 overflow-hidden">
-                    <img id="direct_proof_preview" src="" alt="Direct Proof Preview" class="max-h-32 object-contain rounded-lg">
+                    <img id="direct_proof_preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Direct Proof Preview" class="max-h-32 object-contain rounded-lg">
                 </div>
             </div>
 
@@ -1540,7 +1540,7 @@
         </div>
 
         <div id="approve_proof_container" class="hidden mb-4 p-2 rounded-2xl bg-slate-950 border border-white/10 flex flex-col items-center">
-            <img id="approve_proof_img" src="" alt="Proof" class="max-h-48 object-contain rounded-xl">
+            <img id="approve_proof_img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Proof" class="max-h-48 object-contain rounded-xl">
             <span class="text-[10px] text-slate-400 mt-1 font-mono">সংযুক্ত পেমেন্ট রসিদ / স্ক্রিনশট</span>
         </div>
 
@@ -1876,7 +1876,7 @@
         </button>
         <h4 id="proof_modal_title" class="text-sm font-bold text-white font-bangla mb-3">পেমেন্ট রসিদ ভাউচার</h4>
         <div class="rounded-2xl overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center max-h-[70vh]">
-            <img id="proof_modal_img" src="" alt="Proof" class="max-h-full max-w-full object-contain">
+            <img id="proof_modal_img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Proof" class="max-h-full max-w-full object-contain">
         </div>
         <p id="proof_modal_ref" class="text-xs text-amber-300 font-mono mt-3"></p>
     </div>
@@ -2275,7 +2275,7 @@
         </div>
 
         <div class="max-h-[65vh] overflow-hidden rounded-2xl border border-white/10 bg-slate-950 flex items-center justify-center p-2">
-            <img id="proof_modal_img" src="" alt="Proof Voucher" class="max-h-[60vh] max-w-full object-contain rounded-xl">
+            <img id="proof_modal_img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Proof Voucher" class="max-h-[60vh] max-w-full object-contain rounded-xl">
         </div>
     </div>
 </div>

@@ -47,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 if ($request->is('cp') || $request->is('cp/*')) {
                     return null;
                 }
-                return redirect()->route('home');
+                return response()->view('errors.404', [], 404);
             }
         });
 
@@ -58,7 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('cp') || $request->is('cp/*')) {
                 return null;
             }
-            return redirect()->route('home');
+            return response()->view('errors.404', [], 404);
         });
 
         $exceptions->shouldRenderJsonWhen(

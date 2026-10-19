@@ -18,11 +18,18 @@ public class WebAppInterface {
 
     @JavascriptInterface
     public String getAppVersion() {
-        return "1.0.0";
+        return AppConfig.APP_VERSION;
     }
 
     @JavascriptInterface
     public boolean isNativeApp() {
         return true;
+    }
+
+    @JavascriptInterface
+    public void printPage() {
+        if (mContext instanceof MainActivity) {
+            ((MainActivity) mContext).runOnUiThread(() -> ((MainActivity) mContext).printCurrentPage());
+        }
     }
 }

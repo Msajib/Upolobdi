@@ -216,10 +216,10 @@ class SomitiService
             return $this->cachedDue[$cacheKey];
         }
 
-        $startDate = Carbon::parse('2025-01-01');
+        $startDate = Carbon::parse('2020-01-01');
         $now = Carbon::now();
         if ($now->lessThan($startDate)) {
-            $now = Carbon::parse('2025-04-01');
+            $now = Carbon::parse('2020-01-01');
         }
 
         $totalMonthsActive = max(1, ($now->year - $startDate->year) * 12 + ($now->month - $startDate->month) + 1);
@@ -230,7 +230,7 @@ class SomitiService
         $totalPaidAmount = 0;
         foreach ($allUserPayments as $pay) {
             if ($pay['status'] === 'approved') {
-                $monthsCount = (int) ($pay['months_count'] ?: 1);
+                $monthsCount = isset($pay['months_count']) && $pay['months_count'] !== '' ? (int) $pay['months_count'] : 1;
                 $totalPaidMonths += $monthsCount;
                 $totalPaidAmount += (int) ($pay['amount'] ?: 0);
             }
@@ -465,7 +465,7 @@ class SomitiService
                     'amount' => $amount,
                     'amount_bn' => $this->bnNumber(number_format($amount)),
                     'amount_words' => $this->amountInBnWords($amount),
-                    'months_count' => (int) ($entry->get('months_count') ?: 1),
+                    'months_count' => ($entry->get('months_count') !== null && $entry->get('months_count') !== '') ? (int) $entry->get('months_count') : 1,
                     'payment_months' => $entry->get('payment_months') ?: '',
                     'payment_method' => $entry->get('payment_method') ?: 'bkash',
                     'payment_method_label' => match($entry->get('payment_method')) {
@@ -537,6 +537,7 @@ class SomitiService
                 'voucher_number' => $entry->get('voucher_number') ?: ('EXP-' . substr($entry->id(), 0, 8)),
                 'voucher_image' => $entry->get('voucher_image'),
                 'recorded_by' => $entry->get('recorded_by') ?: 'কমিটি সদস্য',
+                'created_by_name' => $entry->get('recorded_by') ?: 'কমিটি সদস্য',
                 'recorded_by_email' => $entry->get('recorded_by_email'),
                 'description' => $entry->get('description') ?: '',
             ];
@@ -953,6 +954,11 @@ class SomitiService
         ];
 
         return $this->cachedOverview;
+    }
+
+    public function getOverview(): array
+    {
+        return $this->getFinancialOverview();
     }
 
     public function bnNumber($number): string

@@ -18,6 +18,10 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Block common malicious bot scanner probes directly with 403 Forbidden
+    RewriteCond %{REQUEST_URI} ^/.*(wp-admin|wp-login|xmlrpc\.php|phpmyadmin|pma|cgi-bin|\.env|\.git|\.aws|\.svn) [NC]
+    RewriteRule .* - [F,L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

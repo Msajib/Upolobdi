@@ -20,7 +20,7 @@ public final class AppConfig {
     public static final String[] ALLOWED_HOSTS = { "www.upolobdi.com", "upolobdi.com" };
 
     // Application Version Name
-    public static final String APP_VERSION = "1.0.1";
+    public static final String APP_VERSION = "1.0.2";
 
     // Prevent instantiation
     private AppConfig() {}

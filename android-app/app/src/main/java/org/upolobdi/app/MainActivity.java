@@ -13,9 +13,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.provider.MediaStore;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -51,9 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private Button btnRetry;
 
     private ValueCallback<Uri[]> fileUploadCallback;
+    private WebChromeClient.FileChooserParams currentFileChooserParams;
     private String cameraPhotoPath;
     private static final int FILE_CHOOSER_REQUEST_CODE = 1001;
     private static final int PERMISSION_REQUEST_CODE = 1002;
+
+    private long backPressedTime = 0;
 
     // Production URL is configured in AppConfig.java
     private String getTargetUrl() {
@@ -65,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (uri == null || uri.getHost() == null) return false;
         String host = uri.getHost().toLowerCase(Locale.ROOT);
         for (String allowed : AppConfig.ALLOWED_HOSTS) {
-            if (host.equals(allowed)) return true;
+            if (host.equals(allowed) || host.endsWith("." + allowed)) return true;
         }
         return false;
     }
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Custom App User Agent
         String defaultUa = settings.getUserAgentString();
-        settings.setUserAgentString(defaultUa + " UpolobdiApp/1.0 (Android Native)");
+        settings.setUserAgentString(defaultUa + " UpolobdiApp/1.0.2 (Android Native)");
 
         // Enable Cookies
         CookieManager cookieManager = CookieManager.getInstance();
@@ -132,6 +139,20 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setWebViewClient(new CustomWebViewClient());
         webView.setWebChromeClient(new CustomWebChromeClient());
+
+        // File & APK Download Listener
+        webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "ডাউনলোড শুরু করা যাচ্ছে না", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setupListeners() {
@@ -189,6 +210,20 @@ public class MainActivity extends AppCompatActivity {
         webView.setVisibility(View.VISIBLE);
     }
 
+    // Native Document / Receipt Printing
+    public void printCurrentPage() {
+        try {
+            PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+            if (printManager != null && webView != null) {
+                String jobName = getString(R.string.app_name) + "_Document";
+                PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter(jobName);
+                printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "প্রিন্ট সেবা চালু করা যায়নি", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private class CustomWebViewClient extends WebViewClient {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -224,20 +259,20 @@ public class MainActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             String url = request.getUrl().toString();
 
-            // External link handling (Tel, Mailto, WhatsApp, etc.)
+            // External intent protocols (Phone, Email, WhatsApp, SMS)
             if (url.startsWith("tel:") || url.startsWith("mailto:") || url.startsWith("whatsapp:") || url.startsWith("sms:")) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(intent);
                     return true;
                 } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "অ্যাপ পাওয়া যায়নি", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "প্রয়োজনীয় অ্যাপ ইনস্টল করা নেই", Toast.LENGTH_SHORT).show();
                     return true;
                 }
             }
 
-            // PDF / File Download handling
-            if (url.endsWith(".pdf") || url.contains("/ledger/export") || url.contains("/download")) {
+            // Direct APK package download
+            if (url.endsWith(".apk") || url.contains("/app/download")) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(intent);
@@ -246,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Any non-Upolobdi website opens in the external browser, never inside the app
+            // Any non-Upolobdi website opens in external browser, never inside the app
             if (!isAllowedHost(request.getUrl())) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, request.getUrl()));
@@ -255,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            // All internal pages (dashboard, receipts, rules, ledger, audit) render inside WebView
             return false;
         }
     }
@@ -275,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                 fileUploadCallback.onReceiveValue(null);
             }
             fileUploadCallback = filePathCallback;
+            currentFileChooserParams = fileChooserParams;
 
             checkPermissionsAndOpenFileChooser();
             return true;
@@ -293,42 +330,63 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
+            // Proceed to file chooser whether camera is granted or denied (gallery remains accessible)
             openFileChooserIntent();
         }
     }
 
     private void openFileChooserIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent takePictureIntent = null;
         File photoFile = null;
-        try {
-            photoFile = createImageFile();
-            cameraPhotoPath = photoFile.getAbsolutePath();
-        } catch (IOException ex) {
-            // Error occurred while creating the File
-        }
 
-        if (photoFile != null) {
-            Uri photoURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", photoFile);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                photoFile = createImageFile();
+                cameraPhotoPath = photoFile.getAbsolutePath();
+                Uri photoURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", photoFile);
+                takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            } catch (Exception ex) {
+                takePictureIntent = null;
+                cameraPhotoPath = null;
+            }
         }
 
         Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        contentSelectionIntent.setType("image/*");
 
-        Intent[] intentArray;
-        if (takePictureIntent != null && photoFile != null) {
-            intentArray = new Intent[]{takePictureIntent};
+        // Support both images and pdfs as specified by website input fields
+        String[] acceptTypes = (currentFileChooserParams != null) ? currentFileChooserParams.getAcceptTypes() : null;
+        if (acceptTypes != null && acceptTypes.length > 0 && !acceptTypes[0].trim().isEmpty()) {
+            contentSelectionIntent.setType(acceptTypes[0]);
+            if (acceptTypes.length > 1) {
+                contentSelectionIntent.putExtra(Intent.EXTRA_MIME_TYPES, acceptTypes);
+            }
         } else {
-            intentArray = new Intent[0];
+            contentSelectionIntent.setType("*/*");
+            contentSelectionIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "application/pdf"});
         }
+
+        Intent[] intentArray = (takePictureIntent != null && photoFile != null)
+                ? new Intent[]{takePictureIntent}
+                : new Intent[0];
 
         Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
         chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, "ছবি আপলোড নির্বাচন করুন");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+        chooserIntent.putExtra(Intent.EXTRA_TITLE, "ফাইল বা ছবি নির্বাচন করুন");
+        if (intentArray.length > 0) {
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+        }
 
-        startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST_CODE);
+        try {
+            startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST_CODE);
+        } catch (Exception e) {
+            if (fileUploadCallback != null) {
+                fileUploadCallback.onReceiveValue(null);
+                fileUploadCallback = null;
+            }
+            Toast.makeText(this, "ফাইল সিলেক্টর চালু করা যায়নি", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private File createImageFile() throws IOException {
@@ -351,12 +409,21 @@ public class MainActivity extends AppCompatActivity {
                 if (data == null || data.getData() == null) {
                     // Photo taken via camera
                     if (cameraPhotoPath != null) {
-                        results = new Uri[]{Uri.fromFile(new File(cameraPhotoPath))};
+                        File file = new File(cameraPhotoPath);
+                        if (file.exists() && file.length() > 0) {
+                            results = new Uri[]{Uri.fromFile(file)};
+                        }
                     }
                 } else {
                     String dataString = data.getDataString();
                     if (dataString != null) {
                         results = new Uri[]{Uri.parse(dataString)};
+                    } else if (data.getClipData() != null) {
+                        int count = data.getClipData().getItemCount();
+                        results = new Uri[count];
+                        for (int i = 0; i < count; i++) {
+                            results[i] = data.getClipData().getItemAt(i).getUri();
+                        }
                     }
                 }
             }
@@ -373,7 +440,12 @@ public class MainActivity extends AppCompatActivity {
         if (webView != null && webView.canGoBack()) {
             webView.goBack();
         } else {
-            super.onBackPressed();
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                super.onBackPressed();
+            } else {
+                Toast.makeText(this, "অ্যাপ থেকে বের হতে আবার ব্যাক চাপুন", Toast.LENGTH_SHORT).show();
+                backPressedTime = System.currentTimeMillis();
+            }
         }
     }
 }

@@ -257,7 +257,7 @@
                                     @endif
                                 </td>
                                 <td class="p-2.5 font-bangla text-slate-300 text-[11px]">{{ $exp['category'] }}</td>
-                                <td class="p-2.5 font-bangla text-slate-400 text-[11px]">{{ $exp['created_by_name'] }}</td>
+                                <td class="p-2.5 font-bangla text-slate-400 text-[11px]">{{ $exp['recorded_by'] ?? $exp['created_by_name'] ?? 'কমিটি সদস্য' }}</td>
                                 <td class="p-2.5 text-right font-bold text-rose-400">
                                     -{{ number_format($exp['amount']) }} BDT
                                 </td>

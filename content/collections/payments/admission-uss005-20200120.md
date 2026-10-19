@@ -11,8 +11,8 @@ date: '2020-01-20'
 status: approved
 payment_status: approved
 payment_method: cash
-months_count: 1
-payment_months: 'জানুয়ারি ২০২০ (প্রারম্ভিক ভর্তি ফি)'
+months_count: 0
+payment_months: 'প্রারম্ভিক ভর্তি ফি (২০/০১/২০২০)'
 reference_number: ADM-20200120-USS-005
 receipt_number: USS-REC-2020-ADM05
 receipt_generated_at: '2020-01-20 10:00:00'
